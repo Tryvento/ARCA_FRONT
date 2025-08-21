@@ -1,0 +1,16 @@
+:root {
+    --fede-color: #19A053;
+    --fede-color-rgba: rgba(25, 160, 83, 0.616);
+    --fede-color-hover: #156e3c;
+    --fede-color-active: #37cf79;
+    --negative-color: #d84141;
+    --negative-color-hover: #c62828;
+    --negative-color-active: #ef5350;
+    --warning-color: #90a326;
+    --warning-color-hover: #b3c23d;
+    --warning-color-active: #d8ce41;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --back-color: #777777c0;
+    --secondary-text: #383838;
+    --bg-color: #5cac7e;
+}
