@@ -1,20 +1,32 @@
 <template>
   <div class="users-container">
     <span class="users-title">
-      <h1>Usuarios gestor de facturas</h1>
+      <h1>Usuarios ARC@</h1>
       <button @click="showNewUserWindow = true">Agregar Usuario</button>
     </span>
     <div class="search-container">
       <span class="search-inputs">
         <input type="text" v-model="complete_name_search" placeholder="Nombre completo" />
         <input type="text" v-model="user_name_search" placeholder="Usuario" />
-        <input type="text" v-model="location_code_search" placeholder="Código de ubicación" />
+        <select v-model="location_code_search" class="location-select">
+          <option value="">Todas las ubicaciones</option>
+          <option v-for="location in locationsList" :key="location.code" :value="location.code">
+            {{ location.name }} ({{ location.code }})
+          </option>
+        </select>
+        <label for="inactiveSearch" class="switch" :class="{ 'switch-active': inactiveSearch }" @click="searchUsers(complete_name_search, user_name_search, location_code_search, inactiveSearch)">
+          <input type="checkbox" v-model="inactiveSearch" id="inactiveSearch">
+          <span class="slider"></span>
+          <span>Usuarios inactivos</span>
+        </label>
       </span>
       <div class="search-buttons">
         <button @click="searchUsers(complete_name_search, user_name_search, location_code_search)">
-          Buscar
+          <ion-icon name="search"></ion-icon>
         </button>
-        <button @click="fetchUsers">Mostrar todos</button>
+        <button @click="fetchUsers">
+          <ion-icon name="refresh"></ion-icon>
+        </button>
       </div>
     </div>
 
@@ -34,8 +46,8 @@
             <button @click="handleSwitchPermission(user.user_name, user.admin)">
               <ion-icon :name="user.admin ? 'lock-closed-outline' : 'lock-open'"></ion-icon>
             </button>
-            <button @click="handleDesactivateUser(user.user_name)">
-              <ion-icon name="power" />
+            <button @click="handleDesactivateUser(user.user_name, user.is_active)" :class="user.is_active ? 'active' : 'inactive'">
+              <ion-icon :name="user.is_active ? 'power' : 'power-outline'"></ion-icon>
             </button>
           </span>
         </li>
@@ -77,6 +89,20 @@
     </div>
   </transition>
   <transition name="fade">
+    <div class="delete-user-modal" v-if="showActivateUserWindow">
+      <div class="delete-user-modal-content">
+        <p>¿Estás seguro de que deseas activar este usuario?</p>
+        <button @click="activateUser()" id="delete-user-button">Sí</button>
+        <button
+          @click="((showActivateUserWindow = false), (userToActivate = ''))"
+          id="cancel-delete-user-button"
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </transition>
+  <transition name="fade">
     <div class="switch-permission-modal" v-if="showSwitchPermissionWindow">
       <div class="switch-permission-modal-content">
         <p>¿Estás seguro de que deseas cambiar el permiso de este usuario?</p>
@@ -96,9 +122,10 @@
 import { ref, onMounted, watch, provide, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUsersStore } from '../stores/users'
-import NewUserWindows from '../components/NewUserWindows.vue'
-import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
+import axios from 'axios'
+import locations from '../assests/utils/locations.json'
+import NewUserWindows from '../components/NewUserWindows.vue'
 
 const authStore = useAuthStore()
 
@@ -107,12 +134,14 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const showNewUserWindow = ref(false)
 const showDesactivateUserWindow = ref(false)
+const showActivateUserWindow = ref(false)
 const showSwitchPermissionWindow = ref(false)
 const usersData = ref([])
 
 const userToDesactivate = ref('')
 const userToSwitchPermission = ref('')
 const permissionUserToSwitch = ref(false)
+const userToActivate = ref('')
 
 const complete_name_search = ref('')
 const user_name_search = ref('')
@@ -120,17 +149,22 @@ const location_code_search = ref('')
 
 const isLoading = inject('isLoading')
 
+const inactiveSearch = ref(false)
+
+const locationsList = [...locations.locations].sort((a, b) => 
+  a.name.localeCompare(b.name, 'es', {sensitivity: 'base'})
+)
+
 provide('showNewUserWindow', showNewUserWindow)
 
 const fetchUsers = async () => {
   isLoading.value = true
   const skip = (currentPage.value - 1) * pageSize.value
-  //await usersStore.fetchUsers(skip, pageSize.value)
   try {
     const response = await axios.get('http://localhost:8000/users', {
       params: {
         skip,
-        limit: pageSize.value,
+        limit: pageSize.value
       },
       headers: {
         Authorization: `Bearer ${authStore.userData.token}`,
@@ -146,15 +180,16 @@ const fetchUsers = async () => {
   }
 }
 
-const searchUsers = async (complete_name, user_name, location_code) => {
+const searchUsers = async (complete_name, user_name, location_code, is_active) => {
   isLoading.value = true
-  console.log('REQUERIMENTOS BUSQUEDA:', complete_name, user_name, location_code)
+  console.log('REQUERIMENTOS BUSQUEDA:', complete_name, user_name, location_code, is_active)
   try {
     const response = await axios.get('http://localhost:8000/users/search/', {
       params: {
         complete_name,
         user_name,
         location_code,
+        is_active
       },
       headers: {
         Authorization: `Bearer ${authStore.userData.token}`,
@@ -170,9 +205,14 @@ const searchUsers = async (complete_name, user_name, location_code) => {
   }
 }
 
-const handleDesactivateUser = (user_name) => {
-  showDesactivateUserWindow.value = true
-  userToDesactivate.value = user_name
+const handleDesactivateUser = (user_name, is_active) => {
+  if (is_active) {
+    userToDesactivate.value = user_name
+    showDesactivateUserWindow.value = true
+  } else {
+    userToActivate.value = user_name
+    showActivateUserWindow.value = true
+  }
 }
 
 const desactivateUser = async () => {
@@ -182,6 +222,16 @@ const desactivateUser = async () => {
   isLoading.value = false
   userToDesactivate.value = ''
   fetchUsers()
+}
+
+const activateUser = async () => {
+  isLoading.value = true
+  await usersStore.stateUser(userToActivate.value, true)
+  showActivateUserWindow.value = false
+  isLoading.value = false
+  userToActivate.value = ''
+  fetchUsers()
+  inactiveSearch.value = false
 }
 
 const handleSwitchPermission = (user_name, admin) => {
@@ -256,13 +306,12 @@ watch([currentPage, pageSize], () => {
   align-items: center;
 }
 h1 {
-  color: white;
+  color: var(--fede-color);
   text-align: center;
   margin-bottom: 30px;
   font-size: 2rem;
   text-transform: uppercase;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.61);
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
 button {
@@ -452,6 +501,54 @@ select:focus {
   background-color: var(--fede-color-hover);
 }
 
+/* Switch Styles */
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #2c3e50;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.slider {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+  background-color: #ccc;
+  border-radius: 24px;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: .4s;
+}
+
+.switch-active .slider {
+  background-color: var(--fede-color);
+}
+
+.switch-active .slider:before {
+  transform: translateX(26px);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .user-item {
@@ -472,6 +569,22 @@ select:focus {
 
   .page-size {
     margin-left: 0;
+    margin-top: 10px;
+  }
+  
+  .search-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-buttons {
+    display: flex;
+    justify-content: center;
     margin-top: 10px;
   }
 }

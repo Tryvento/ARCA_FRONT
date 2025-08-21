@@ -37,8 +37,8 @@ import { useUsersStore } from '../stores/users'
 
 import locations from '../assests/utils/locations.json'
 
-const locationsList = [...locations.locations].sort((a, b) => 
-  a.name.localeCompare(b.name, 'es', {sensitivity: 'base'})
+const locationsList = [...locations.locations].sort((a, b) =>
+  a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }),
 )
 console.log(locationsList)
 
@@ -216,14 +216,18 @@ const createUser = async () => {
   border-color: #ccc;
 }
 
-/* Animation */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
+#location_code {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--back-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+#location_code:focus {
+  outline: none;
+  border-color: var(--fede-color);
+  box-shadow: 0 0 0 2px var(--fede-color-rgba);
 }
 </style>

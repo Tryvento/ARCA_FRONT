@@ -135,7 +135,7 @@ export const useUsersStore = defineStore('users', () => {
       const response = await axios.put(
         `http://localhost:8000/users/${user_name}`,
         {
-          isActive: state,
+          is_active: state,
         },
         {
           headers: {
