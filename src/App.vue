@@ -10,8 +10,6 @@ provide('isLoading', isLoading)
 const intervalId = ref(null)
 
 const checkEveryFiveSeconds = () => {
-  // Aquí va la lógica que quieres ejecutar cada 5 segundos
-  console.log('Ejecutando tarea cada 1 minutos')
   useAuthStore().verifyToken()
   if (useAuthStore().userData.token === null) {
     router.push('/')

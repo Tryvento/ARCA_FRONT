@@ -35,7 +35,7 @@ export const useAuthStore = defineStore('userAuth', () => {
       if (response.status === 200) {
         userData.value.token = response.data.access_token
         try {
-            const userResponse = await axios.get('http://localhost:8000/users/me', {
+            const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/users/me`, {
                 headers: {
                     'Authorization': `Bearer ${userData.value.token}`,
                     'Content-Type' : 'application/json',
@@ -87,7 +87,7 @@ export const useAuthStore = defineStore('userAuth', () => {
       return
     }
     try {
-      const response = await axios.get('http://localhost:8000/users/me', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/me`, {
         headers: {
           'Authorization': `Bearer ${userData.value.token}`,
           'Content-Type' : 'application/json',
@@ -99,7 +99,6 @@ export const useAuthStore = defineStore('userAuth', () => {
       userData.value.admin = response.data.admin
       userData.value.restore_password = response.data.restore_password
       localStorage.setItem('userData', JSON.stringify(userData.value))
-      console.log("Token verificado: ", userData.value.token)
       return { success: true, message: 'Inicio de sesión exitoso' }
     } catch (error) {
       if (error.response?.status === 401) {

@@ -14,7 +14,7 @@ export const useUsersStore = defineStore('users', () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:8000/users/${user_name}`,
+        `${import.meta.env.VITE_API_URL}/users/${user_name}`,
         {
           restore_password: true,
           password: '123456',
@@ -46,7 +46,7 @@ export const useUsersStore = defineStore('users', () => {
       }
 
       const response = await axios.put(
-        `http://localhost:8000/users/${user_name}`,
+        `${import.meta.env.VITE_API_URL}/users/${user_name}`,
         {
           password: newPassword,
           restore_password: false,
@@ -80,7 +80,7 @@ export const useUsersStore = defineStore('users', () => {
     try {
         console.log('Datos nuevo usuario', user_name, complete_name, location_code, admin)
       const response = await axios.post(
-        'http://localhost:8000/users',
+        `${import.meta.env.VITE_API_URL}/users`,
         {
           user_name: user_name,
           complete_name: complete_name,
@@ -110,7 +110,7 @@ export const useUsersStore = defineStore('users', () => {
     }
     try {
       const response = await axios.delete(
-        `http://localhost:8000/users/${user_name}`,
+        `${import.meta.env.VITE_API_URL}/users/${user_name}`,
         {
           headers: {
             Authorization: `Bearer ${authStore.userData.token}`,
@@ -133,7 +133,7 @@ export const useUsersStore = defineStore('users', () => {
     }
     try {
       const response = await axios.put(
-        `http://localhost:8000/users/${user_name}`,
+        `${import.meta.env.VITE_API_URL}/users/${user_name}`,
         {
           is_active: state,
         },
@@ -159,7 +159,7 @@ export const useUsersStore = defineStore('users', () => {
     }
     try {
       const response = await axios.put(
-        `http://localhost:8000/users/${user_name}`,
+        `${import.meta.env.VITE_API_URL}/users/${user_name}`,
         {
           admin: admin,
         },
