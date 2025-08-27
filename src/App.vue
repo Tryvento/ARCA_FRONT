@@ -1,9 +1,10 @@
 <script setup>
 import { useAuthStore } from './stores/auth'
-import { useRouter } from 'vue-router'
-import { onMounted, onUnmounted, provide, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { onMounted, onUnmounted, provide, ref, watch } from 'vue'
 
 const router = useRouter()
+const route = useRoute()
 const isLoading = ref(false)
 provide('isLoading', isLoading)
 
@@ -19,7 +20,17 @@ const checkEveryFiveSeconds = () => {
   intervalId.value = setTimeout(checkEveryFiveSeconds, 1000 * 60 * 1)
 }
 
+const handlePath = () => {
+  if (route.name === 'login' && useAuthStore().userData.token !== null) {
+    router.push('/search')
+  }
+  if (route.name === 'search' && useAuthStore().userData.token === null) {
+    router.push('/')
+  }
+}
+
 onMounted(() => {
+  isLoading.value = false
   const userData = JSON.parse(localStorage.getItem('userData'))
   if (userData) {
     useAuthStore().userData.token = userData.token
@@ -28,11 +39,9 @@ onMounted(() => {
     useAuthStore().userData.location_code = userData.location_code
     useAuthStore().userData.admin = userData.admin
     useAuthStore().userData.restore_password = userData.restore_password
-    router.push('/search')
   } else {
     router.push('/')
   }
-  
   // Iniciar el intervalo recursivo
   checkEveryFiveSeconds()
 })
@@ -43,6 +52,13 @@ onUnmounted(() => {
     clearTimeout(intervalId.value)
   }
 })
+
+watch(
+  () => route.name,
+  () => {
+    handlePath()
+  }
+)
 </script>
 
 <template>
@@ -50,9 +66,27 @@ onUnmounted(() => {
     <p>Cargando...</p>
   </div>
   <router-view></router-view>
+  <img src="./assests/images/l_fdz_v.png" alt="" class="logo">
 </template>
 
 <style scoped>
+.logo {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.6;
+  z-index: -1;
+  max-height: 80vh;
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .logo {
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
 .loading {
     display: flex;
     justify-content: center;
@@ -73,6 +107,5 @@ onUnmounted(() => {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
     letter-spacing: 2px;
-
 }
 </style>

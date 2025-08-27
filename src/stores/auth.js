@@ -75,7 +75,7 @@ export const useAuthStore = defineStore('userAuth', () => {
       complete_name: '',
       location_code: '',
       admin: false,
-      token: '',
+      token: null,
       restore_password: false,
     }
     localStorage.removeItem('userData')

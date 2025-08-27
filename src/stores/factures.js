@@ -139,11 +139,75 @@ export const useFacturesStore = defineStore('factures', () => {
     }
   }
 
+  const getNCNDSuppliers = async (
+    type,
+    start_date = null,
+    end_date = null,
+    nit = null,
+    page = 1,
+    limit = 25,
+  ) => {
+    try {
+      console.log(type, start_date, end_date, nit, page, limit)
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/nd_or_nc/suppliers`, {
+        params: {
+          type: type,
+          start_date: start_date,
+          end_date: end_date,
+          nit: nit,
+          page: page,
+          limit: limit,
+        },
+        headers: {
+          Authorization: `Bearer ${authStore.userData.token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error('Error al obtener facturas:', error.response?.data?.detail || error.message)
+      return error.response?.data?.detail || error.message
+    }
+  }
+
+  const getSA = async (
+    start_date,
+    end_date,
+    page = 1,
+    limit = 25,
+  ) => {
+    try {
+      console.log(start_date, end_date, page, limit)
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/sa`, {
+        params: {
+          start_date: start_date,
+          end_date: end_date,
+          page: page,
+          limit: limit,
+        },
+        headers: {
+          Authorization: `Bearer ${authStore.userData.token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error('Error al obtener facturas:', error.response?.data?.detail || error.message)
+      return error.response?.data?.detail || error.message
+    }
+  }
+
   return {
     factures,
     getFactures,
     getFilesPath,
     downloadFile,
     getNCND,
+    getNCNDSuppliers,
+    getSA,
   }
 })

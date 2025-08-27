@@ -6,6 +6,7 @@
 
     <form id="login-form" @submit.prevent="handleLogin">
       <h2>Inicio de sesión</h2>
+      <p>Comunicar con el equipo de sistemas en caso de no conocer su usuario y/o contraseña</p>
       <label for="user_name" class="input-label">
         <ion-icon name="person"></ion-icon>
         <input type="text" placeholder="Usuario" v-model="user_name" :disabled="isLoading" />
@@ -37,6 +38,11 @@
         {{ message }}
       </div>
     </form>
+    <div id="login-footer">
+      <span><span class="fede-color">FEDEARROZ</span> - FEDERACION NACIONAL DE ARROCEROS</span>
+      <span>Version 1.0.0</span>
+      <span>© 2025 Copyright Fedearroz. Todos los derechos reservados.</span>
+    </div>
   </div>
   <transition name="fade">
     <div v-if="showRestoreModal" id="restore-modal">
@@ -199,8 +205,10 @@ onMounted(() => {
   align-items: center;
 }
 #login-header img {
-  width: 350px;
-  filter: drop-shadow(0 2px 20px rgba(0, 0, 0, 0.438));  
+  width: 300px;
+  filter: drop-shadow(0 2px 20px rgba(0, 0, 0, 0.438)); 
+  margin-bottom: 20px;
+  scale: 1.3; 
 }
 #login-header p {
     color: white;
@@ -217,27 +225,38 @@ onMounted(() => {
   gap: 10px;
   background-color: var(--fede-color);
   padding: 20px;
-  border-radius: 15px;
+  border-radius: 5px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.61);
-  min-width: 300px;
+  min-width: 350px;
+  min-height: 350px;
   max-width: 90dvw;
+  margin-bottom: 20px;
+  margin-top: 20px;
 }
 #login-form h2 {
   font-size: 1.5rem;
   color: white;
 }
+#login-form p {
+    color: white;
+    font-size: 1rem;
+    text-align: center;
+    width: 70%;
+}
 .input-label {
   display: flex;
   flex-direction: row;
-  padding: 5px;
+  padding: 10px;
   width: 90%;
   justify-content: space-between;
   align-items: center;
   gap: 5px;
-  border-bottom: 2px solid;
+  border-bottom: 4px solid;
   cursor: pointer;
   transition: all 0.3s ease;
   color: white;
+  margin-bottom: 10px;
+  border-radius: 2px;
 }
 
 .input-label input {
@@ -253,7 +272,7 @@ onMounted(() => {
 
 .input-label:focus-within {
   scale: 1.01;
-  border-bottom: 2px solid var(--fede-color-hover);
+  border-bottom: 5px solid var(--fede-color-hover);
 }
 .input-label input::placeholder{
     color: white;
@@ -300,6 +319,19 @@ button[disabled] {
   opacity: 0.7;
   cursor: not-allowed;
 }
+#login-footer {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.fede-color {
+  color: var(--fede-color);
+  font-weight: bolder;
+  letter-spacing: 1.5px;
+}
 
 #restore-modal {
   position: absolute;
@@ -319,9 +351,27 @@ button[disabled] {
   justify-content: center;
   align-items: center;
   background-color: white;
+  border: 5px solid var(--fede-color);
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.747);
+}
+
+#restore-modal-content h2{
+    color: var(--fede-color);
+    font-weight: bolder;
+    letter-spacing: 1.5px;
+}
+
+#restore-modal-content .input-label{
+  color: black;
+  margin-bottom: 10px;
+}
+#restore-modal-content .input-label ion-icon{
+    color: black;
+}
+#restore-modal-content .input-label input{
+    color: black;
 }
 .toggle-r-password{
     display: flex;
@@ -365,6 +415,7 @@ button[disabled] {
 }
 .restore-modal-buttons button:hover{
     background-color: var(--fede-color-hover);
+    scale: 1.1;
 }
 .restore-modal-buttons button:active{
     transform: translateY(-2px);
