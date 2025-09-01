@@ -37,6 +37,8 @@ import { useUsersStore } from '../stores/users'
 
 import locations from '../assests/utils/locations.json'
 
+const alerts = inject('alerts')
+
 const locationsList = [...locations.locations].sort((a, b) =>
   a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }),
 )
@@ -55,15 +57,23 @@ const isLoading = inject('isLoading')
 
 const createUser = async () => {
   isLoading.value = true
-  await usersStore.createUser(
-    user_name.value,
-    complete_name.value,
-    location_code.value,
-    admin.value,
-  )
-  showNewUserWindow.value = false
-  isLoading.value = false
-  window.location.reload()
+  try {
+    await usersStore.createUser(
+      user_name.value,
+      complete_name.value,
+      location_code.value,
+      admin.value,
+    )
+    showNewUserWindow.value = false
+    isLoading.value = false
+    window.location.reload()
+    alerts.success('Usuario creado', 5000)
+  } catch (error) {
+    console.error(error)
+    alerts.error('Error al crear usuario', 5000)
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 

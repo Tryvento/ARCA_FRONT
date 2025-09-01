@@ -1,7 +1,7 @@
 <template>
   <div id="login-container">
     <div id="login-header">
-      <img src="../assests/images/l_arc.png" alt="">
+      <img src="../assests/images/arca_logo.png" alt="">
     </div>
 
     <form id="login-form" @submit.prevent="handleLogin">
@@ -33,10 +33,6 @@
         <span v-if="!isLoading">Iniciar sesión</span>
         <span v-else>Iniciando sesión...</span>
       </button>
-
-      <div v-if="message" :class="['message', messageType]">
-        {{ message }}
-      </div>
     </form>
     <div id="login-footer">
       <span><span class="fede-color">FEDEARROZ</span> - FEDERACION NACIONAL DE ARROCEROS</span>
@@ -82,10 +78,12 @@ import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { useUsersStore } from '../stores/users'
+
 const usersStore = useUsersStore()
 
 const authStore = useAuthStore()
 const router = useRouter()
+const alerts = inject('alerts')
 
 const user_name = ref('')
 const password = ref('')
@@ -99,12 +97,11 @@ const showRestoreModal = ref(false)
 const showRestorePassword = ref(false)
 
 const showMessage = (msg, type = 'error') => {
-  message.value = msg
-  messageType.value = type
-  setTimeout(() => {
-    message.value = ''
-    messageType.value = ''
-  }, 5000)
+  if (type === 'error') {
+    alerts.error(msg)
+  } else if (type === 'success') {
+    alerts.success(msg, 3000)
+  }
 }
 
 const handleLogin = async () => {
@@ -185,18 +182,12 @@ onMounted(() => {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 #login-container {
-  width: 100dvw;
+  width: 100%;
   height: 100dvh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-}
-#login-container h1{
-    color: white;
-    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.61);
-    font-size: 3rem;
-    letter-spacing: 1.5px;
 }
 #login-header {
   display: flex;
@@ -205,8 +196,8 @@ onMounted(() => {
   align-items: center;
 }
 #login-header img {
-  width: 300px;
-  filter: drop-shadow(0 2px 20px rgba(0, 0, 0, 0.438)); 
+  width: 250px;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.336)); 
   margin-bottom: 20px;
   scale: 1.3; 
 }
@@ -222,13 +213,12 @@ onMounted(() => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   background-color: var(--fede-color);
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.61);
-  min-width: 350px;
-  min-height: 350px;
+  min-width: 250px;
   max-width: 90dvw;
   margin-bottom: 20px;
   margin-top: 20px;
@@ -242,12 +232,13 @@ onMounted(() => {
     font-size: 1rem;
     text-align: center;
     width: 70%;
+    font-size: .9rem
 }
 .input-label {
   display: flex;
   flex-direction: row;
-  padding: 10px;
-  width: 90%;
+  padding: 5px;
+  width: 80%;
   justify-content: space-between;
   align-items: center;
   gap: 5px;
@@ -326,6 +317,8 @@ button[disabled] {
   justify-content: center;
   align-items: center;
   gap: 10px;
+  font-size: .7rem;
+  margin-bottom: 40px;
 }
 .fede-color {
   color: var(--fede-color);

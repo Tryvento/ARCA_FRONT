@@ -6,11 +6,15 @@
     --negative-color: #d84141;
     --negative-color-hover: #c62828;
     --negative-color-active: #ef5350;
-    --warning-color: #90a326;
+    --warning-color:rgb(168, 187, 60);
     --warning-color-hover: #b3c23d;
     --warning-color-active: #d8ce41;
+    --info-color: #2196f3;
+    --info-color-hover: #1976d2;
+    --info-color-active: #64b5f6;
     --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --back-color: #777777c0;
     --secondary-text: #383838;
     --bg-color: #5cac7e;
+    --alert-color: #e1f5fe;
 }

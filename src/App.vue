@@ -2,9 +2,16 @@
 import { useAuthStore } from './stores/auth'
 import { useRouter, useRoute } from 'vue-router'
 import { onMounted, onUnmounted, provide, ref, watch } from 'vue'
+import { useAlertsProviders } from './stores/useAlerts'
+import AlertContainer from './components/AlertContainer.vue'
 
 const router = useRouter()
 const route = useRoute()
+
+const alerts = useAlertsProviders()
+
+provide('alerts', alerts)
+
 const isLoading = ref(false)
 provide('isLoading', isLoading)
 
@@ -15,9 +22,13 @@ const checkEveryFiveSeconds = () => {
   if (useAuthStore().userData.token === null) {
     router.push('/')
   }
-  
-  // Programar el próximo llamado
-  intervalId.value = setTimeout(checkEveryFiveSeconds, 1000 * 60 * 1)
+  let estado = false;
+  setInterval(() => {
+    document.title = estado ? "ARC@" : "SISTEMA DE GESTION DE ARCHIVOS";
+    estado = !estado;
+  }, 2000);
+  // Programar el próximo llamado cada 60 segundos
+  intervalId.value = setTimeout(checkEveryFiveSeconds, 1000 * 60 * 5)
 }
 
 const handlePath = () => {
@@ -67,9 +78,11 @@ watch(
   </div>
   <router-view></router-view>
   <img src="./assests/images/l_fdz_v.png" alt="" class="logo">
+  <AlertContainer position="top-left"/>
 </template>
 
 <style scoped>
+
 .logo {
   position: fixed;
   left: 0;
@@ -77,7 +90,7 @@ watch(
   transform: translateY(-50%);
   opacity: 0.6;
   z-index: -1;
-  max-height: 80vh;
+  max-height: 50vh;
   pointer-events: none;
 }
 

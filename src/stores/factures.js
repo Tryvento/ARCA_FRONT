@@ -112,8 +112,8 @@ export const useFacturesStore = defineStore('factures', () => {
     limit = 25,
   ) => {
     try {
-      console.log("Limit: ", limit)
-      console.log("Page: ", page)
+      console.log('Limit: ', limit)
+      console.log('Page: ', page)
       console.log(searchType, type, location, start_date, end_date, page, limit)
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/nd_or_nc`, {
         params: {
@@ -172,12 +172,7 @@ export const useFacturesStore = defineStore('factures', () => {
     }
   }
 
-  const getSA = async (
-    start_date,
-    end_date,
-    page = 1,
-    limit = 25,
-  ) => {
+  const getSA = async (start_date, end_date, page = 1, limit = 25) => {
     try {
       console.log(start_date, end_date, page, limit)
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/sa`, {
@@ -201,6 +196,30 @@ export const useFacturesStore = defineStore('factures', () => {
     }
   }
 
+  const getAll = async (start_date, end_date, page = 1, limit = 25, type) => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/all_files`, {
+        params: {
+          start_date: start_date,
+          end_date: end_date,
+          page: page,
+          limit: limit,
+          type: type,
+        },
+        headers: {
+          Authorization: `Bearer ${authStore.userData.token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      if (response.status === 200) {
+        return response.data
+      }
+    } catch (error) {
+      console.error('Error al obtener facturas:', error.response?.data?.detail || error.message)
+      return error.response?.data?.detail || error.message
+    }
+  }
+
   return {
     factures,
     getFactures,
@@ -209,5 +228,6 @@ export const useFacturesStore = defineStore('factures', () => {
     getNCND,
     getNCNDSuppliers,
     getSA,
+    getAll,
   }
 })

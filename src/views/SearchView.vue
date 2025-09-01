@@ -1,11 +1,12 @@
 <template>
   <div class="search-container">
     <div class="search-header">
-      <h1>BÚSQUEDA DE FACTURAS</h1>
+      <h1><img src="../assests/images/arca_inv_logo.png" alt="">BÚSQUEDA DE FACTURAS</h1>
       <span class="header-user">
         <h2>
           {{
-            locationsList.find((location) => location.code === authStore.userData.location_code).name
+            locationsList.find((location) => location.code === authStore.userData.location_code)
+              .name
           }}
         </h2>
         <h2>{{ authStore.userData.complete_name }}</h2>
@@ -15,11 +16,15 @@
           @click="router.push('/users')"
           v-if="authStore.userData.admin"
           class="btn-secondary"
+          title="Usuarios"
         >
-          <ion-icon name="people"></ion-icon> Usuarios
+          <ion-icon name="people"></ion-icon> 
         </button>
-        <button @click="(authStore.logout(), router.push('/'))" class="btn-logout">
-          <ion-icon name="log-out"></ion-icon> Cerrar sesión
+        <button @click="(authStore.logout(), router.push('/'))" class="btn-logout" title="Cerrar sesión">
+          <ion-icon name="log-out"></ion-icon>
+        </button>
+        <button v-if="authStore.userData.admin" @click="showUploadFilesWindow = true" title="Subir archivos">
+          <ion-icon name="cloud-upload"></ion-icon>
         </button>
       </div>
     </div>
@@ -41,7 +46,7 @@
               <option value="FAC">FACTURAS</option>
               <option value="NC">NOTAS DE CRÉDITO</option>
               <option value="ND">NOTAS DE DÉBITO</option>
-              <option value="SA">SOPORTE DE ADQUISICIÓN</option>
+              <option value="SA" v-if="typeSearch === 'FEDEARROZ'">SOPORTE DE ADQUISICIÓN</option>
             </select>
           </label>
           <label
@@ -112,9 +117,14 @@
               <option value="100">100</option>
             </select>
           </label>
-          <button @click="searchFactures(false)" class="search-button">
-            <ion-icon name="search"></ion-icon> Buscar
-          </button>
+          <div class="filter-buttons">
+            <button @click="clearFilters" class="btn-secondary">
+              <ion-icon name="trash"></ion-icon> Limpiar Filtros
+            </button>
+            <button @click="searchFactures(false)" class="search-button">
+              <ion-icon name="search"></ion-icon> Buscar
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -123,13 +133,15 @@
       <div class="results-header">
         <h2>Resultados de la búsqueda</h2>
         <div class="header-actions">
-          <span class="results-count">{{ filesData.length }} facturas encontradas</span>
-          <button 
-            v-if="selectedFiles.length > 0" 
-            @click="downloadSelected" 
+          <span class="results-count">{{ totalFiles }} registros encontrados</span>
+          <button
+            v-if="selectedFiles.length > 0"
+            @click="downloadSelected"
             class="download-selected-btn"
           >
-            <ion-icon name="download"></ion-icon> Descargar seleccionados ({{ selectedFiles.length }})
+            <ion-icon name="download"></ion-icon> Descargar seleccionados ({{
+              selectedFiles.length
+            }})
           </button>
         </div>
       </div>
@@ -138,19 +150,25 @@
         <table class="factures-table">
           <thead>
             <tr>
-              <th><input type="checkbox" v-model="selectAll" @change="toggleSelectAll"></th>
+              <th><input type="checkbox" v-model="selectAll" @change="toggleSelectAll" /></th>
               <th>Fecha</th>
               <th>NIT</th>
+              <th v-if="typeSearch === 'PROVEEDORES'">Proveedor</th>
               <th>N° Factura</th>
+              <th v-if="selectedLocation === 'all'">Ubicación</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="facture in filesData" :key="facture.file_name" class="facture-row">
-              <td><input type="checkbox" v-model="selectedFiles" :value="facture.file_name"></td>
+              <td><input type="checkbox" v-model="selectedFiles" :value="facture.file_name" /></td>
               <td>{{ formatDate(facture.date) }}</td>
               <td>{{ facture.nit || 'N/A' }}</td>
+              <td v-if="typeSearch === 'PROVEEDORES' && facture.nit">{{ getSupplierName(facture.nit) || 'N/A' }}</td>
               <td>{{ facture.bill_number || 'N/A' }}</td>
+              <td v-if="selectedLocation === 'all'">
+                {{ getLocationFromInvoice(facture.bill_number) }}
+              </td>
               <td class="actions-cell">
                 <button class="download-btn" @click="downloadFile(facture)">
                   <ion-icon name="download"></ion-icon> Descargar
@@ -171,23 +189,56 @@
       <button @click="nextPage" :disabled="currentPage === totalPages">Siguiente</button>
     </div>
   </div>
+  <transition name="fade">
+    <UploadFiles v-if="showUploadFilesWindow" @close="showUploadFilesWindow = false" />
+  </transition>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject } from 'vue'
+import { ref, computed, onMounted, inject, provide } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useFacturesStore } from '../stores/factures'
+import { useLogsStore } from '../stores/logs'
 import locations from '../assests/utils/locations.json'
+import suppliers from '../assests/utils/suppliers.json'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
+import JSZip from 'jszip'
+import UploadFiles from '../components/UploadFilesWindow.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
 
+const alerts = inject('alerts')
+
 const isLoading = inject('isLoading')
+
+const showUploadFilesWindow = ref(false)
+provide('showUploadFilesWindow', showUploadFilesWindow)
 
 const locationsList = [...locations.locations].sort((a, b) =>
   a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }),
 )
+
+const getLocationFromInvoice = (invoiceNumber) => {
+  if (!invoiceNumber) return 'Otro'
+
+  // Get first 4 digits from invoice number
+  const invoiceCode = invoiceNumber.toString().substring(0, 4)
+
+  // Find location with matching code
+  const location = locationsList.find((loc) => loc.code === invoiceCode)
+
+  return location ? location.name : 'Otro'
+}
+
+const getSupplierName = (nit) => {
+  if (!nit) return null
+  // Find supplier by NIT (convert both to string for comparison)
+  const nitString = nit.toString()
+
+  return suppliers[nitString] || null
+}
 
 const typeSearch = ref('FEDEARROZ')
 const typeFile = ref('FAC')
@@ -207,18 +258,33 @@ const selectAll = ref(false)
 const totalPages = ref(1)
 const currentPage = ref(1)
 const pageSize = ref(25)
+const totalFiles = ref(0)
+
+const clearFilters = () => {
+  typeSearch.value = 'FEDEARROZ'
+  typeFile.value = 'FAC'
+  dateRange.value = '2'
+  selectedLocation.value = authStore.userData.location_code
+  start_date.value = null
+  end_date.value = null
+  nit_search.value = null
+  currentPage.value = 1
+  alerts.info(`Limpieza realizada correctamente`, 5000)
+}
 
 const toggleSelectAll = () => {
   if (selectAll.value) {
-    selectedFiles.value = filesData.value.map(facture => facture.file_name)
+    selectedFiles.value = filesData.value.map((facture) => facture.file_name)
   } else {
     selectedFiles.value = []
   }
 }
 
 const downloadSelected = () => {
-  // This will be handled by the parent component
-  console.log('Archivos seleccionados para descargar:', selectedFiles.value)
+  if (selectedFiles.value.length === 0) {
+    return
+  }
+  downloadMultipleFiles(selectedFiles.value)
 }
 
 const searchFactures = async (isPagination = false) => {
@@ -227,13 +293,32 @@ const searchFactures = async (isPagination = false) => {
   selectAll.value = false
 
   if (!isPagination) {
-    console.log('isPagination: ', isPagination)
     currentPage.value = 1
   }
 
-  if (typeFile.value === 'SA') {
+  if (selectedLocation.value === 'all' && typeFile.value !== 'SA') {
     isLoading.value = true
-    
+    try {
+      const response = await facturesStore.getAll(
+        start_date.value,
+        end_date.value,
+        currentPage.value,
+        pageSize.value,
+        typeFile.value.toLowerCase(),
+      )
+      filesData.value = response.data
+      totalPages.value = response.total_pages
+      totalFiles.value = response.total_items
+      alerts.success(`Busqueda realizada correctamente`, 5000)
+      alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      isLoading.value = false
+    }
+  } else if (typeFile.value === 'SA') {
+    isLoading.value = true
+
     try {
       const response = await facturesStore.getSA(
         start_date.value,
@@ -243,14 +328,18 @@ const searchFactures = async (isPagination = false) => {
       )
       filesData.value = response.data
       totalPages.value = response.total_pages
+      totalFiles.value = response.total_items
+      alerts.success(`Busqueda realizada correctamente`, 5000)
+      alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
       console.error(error)
     } finally {
       isLoading.value = false
     }
-  }
-
-  if ((typeFile.value === 'NC' || typeFile.value === 'ND') && typeSearch.value === 'PROVEEDORES') {
+  } else if (
+    (typeFile.value === 'NC' || typeFile.value === 'ND') &&
+    typeSearch.value === 'PROVEEDORES'
+  ) {
     isLoading.value = true
     try {
       const response = await facturesStore.getNCNDSuppliers(
@@ -261,12 +350,27 @@ const searchFactures = async (isPagination = false) => {
         currentPage.value,
         pageSize.value,
       )
-      filesData.value = response.data
-      totalPages.value = response.total_pages
 
-      console.log(filesData.value)
+      console.log(response)
+      
+      if (response && response.data) {
+        filesData.value = response.data || []
+        totalPages.value = response.total_pages || 1
+        totalFiles.value = response.total_items || 0
+        alerts.success(`Busqueda realizada correctamente`, 5000)
+        alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
+      } else {
+        filesData.value = []
+        totalPages.value = 1
+        totalFiles.value = 0
+        alerts.error(`No se encontraron registros`, 5000)
+      }
     } catch (error) {
-      console.error(error)
+      console.error('Error en la búsqueda:', error)
+      filesData.value = []
+      totalPages.value = 1
+      totalFiles.value = 0
+      alerts.error(`No se encontraron registros`, 5000)
     } finally {
       isLoading.value = false
     }
@@ -287,7 +391,9 @@ const searchFactures = async (isPagination = false) => {
       )
       filesData.value = response.data
       totalPages.value = response.total_pages
-
+      totalFiles.value = response.total_items
+      alerts.success(`Busqueda realizada correctamente`, 5000)
+      alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
       console.log(filesData.value)
     } catch (error) {
       console.error(error)
@@ -311,6 +417,9 @@ const searchFactures = async (isPagination = false) => {
       console.log(response)
       filesData.value = response.data
       totalPages.value = response.total_pages
+      totalFiles.value = response.total_items
+      alerts.success(`Busqueda realizada correctamente`, 5000)
+      alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
       console.error(error)
     } finally {
@@ -352,7 +461,136 @@ const downloadFile = async (facture) => {
   }
   files_paths.value = await facturesStore.getFilesPath(path, facture.file_name)
   facturesStore.downloadFile(files_paths.value.pdf, files_paths.value.xml, facture.file_name)
+  const logData = {
+    bill_number: facture.bill_number,
+    date: facture.date,
+    file_name: facture.file_name,
+    nit: facture.nit
+  }
+  useLogsStore().createLog(authStore.userData.user_name, [logData])
   isLoading.value = false
+  alerts.info(`Factura ${facture.bill_number} descargada`, 5000)
+}
+
+const downloadMultipleFiles = async (fileNames) => {
+  isLoading.value = true
+  const logsData = []
+  
+  try {
+    const zip = new JSZip()
+    
+    // First, collect all file information and download files
+    for (const fileName of fileNames) {
+      let path = ''
+      if (typeSearch.value === 'FEDEARROZ') {
+        path = selectedLocation.value
+      } else if (typeSearch.value === 'PROVEEDORES') {
+        path = 'suppliers'
+      }
+      
+      switch (typeFile.value) {
+        case 'FAC':
+          path += '/factura-ubl'
+          break
+        case 'NC':
+          path += '/nc-ubl'
+          break
+        case 'ND':
+          path += '/nd-ubl'
+          break
+        case 'SA':
+          path = 'soportes-adquisicion'
+          break
+        default:
+          break
+      }
+
+      const files_paths = await facturesStore.getFilesPath(path, fileName)
+      
+      // Add file info to logs
+      let fileInfo = {
+        file_name: fileName,
+        nit: '',
+        bill_number: '',
+        date: ''
+      }
+      
+      // Parse filename based on file type
+      if (typeFile.value === 'SA') {
+        // Format for SOPORTE-ADQUISICION
+        const parts = fileName.replace('SOPORTE-ADQUISICION(', '').replace(').pdf', '').split(';')
+        fileInfo = {
+          ...fileInfo,
+          nit: parts[0],
+          bill_number: parts[1],
+          date: parts[2]
+        }
+      } else {
+        // Format for FACTURA-UBL, NC-UBL, ND-UBL
+        const prefix = typeFile.value === 'FAC' ? 'FACTURA-UBL(' : 
+                      (typeFile.value === 'NC' ? 'NC-UBL(' : 'ND-UBL(')
+        const parts = fileName.replace(prefix, '').replace(').pdf', '').split(';')
+        fileInfo = {
+          ...fileInfo,
+          nit: parts[0],
+          bill_number: parts[1],
+          date: parts[2]
+        }
+      }
+      logsData.push(fileInfo)
+
+      const rarBlob = await downloadFileAsBlob(files_paths.pdf, files_paths.xml, fileName)
+      zip.file(`${fileName}.rar`, rarBlob)
+    }
+    
+    // Create ZIP file
+    const zipBlob = await zip.generateAsync({ type: 'blob' })
+
+    // Download ZIP
+    const url = window.URL.createObjectURL(zipBlob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', "DATOS.zip")
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+
+    // Create a single log entry with all files
+    if (logsData.length > 0) {
+      useLogsStore().createLog(authStore.userData.user_name, logsData)
+    }
+    alerts.info(`Registros descargados`, 5000)
+
+    // Clean up
+    setTimeout(() => window.URL.revokeObjectURL(url), 100)
+  } finally {
+    isLoading.value = false
+  }
+
+}
+
+const downloadFileAsBlob = async (pdf, xml, file_name) => {
+  try{
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/factures/download`, {
+      params: {
+        xml_path: xml,
+        pdf_path: pdf,
+        file_name: file_name
+      },
+      headers: {
+        Authorization: `Bearer ${authStore.userData.token}`,
+        'Content-Type': 'application/json',
+      },
+      responseType: 'blob',
+    });
+
+    if (response.status === 200) {
+      return response.data
+    }
+  }catch(error){
+    console.error('Error al descargar archivo:', error.response?.data?.detail || error.message)
+    return error.response?.data?.detail || error.message
+  }
 }
 
 const previousPage = () => {
@@ -389,8 +627,8 @@ onMounted(() => {
   margin: 0 auto;
   padding: 20px;
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
+  font-family: var(--font-family);
+  color: var(--font-color);
 }
 
 .search-header {
@@ -407,6 +645,13 @@ h1 {
   font-size: 2rem;
   margin: 0;
   font-weight: 700;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+h1 img {
+  width: 50px;
 }
 
 h2 {
@@ -423,9 +668,37 @@ h2 {
   flex-direction: column;
 }
 
+.header-user h2 {
+  text-align: center;
+}
+
 .header-buttons {
   display: flex;
   gap: 12px;
+}
+
+.header-buttons button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.header-buttons button ion-icon {
+  scale: 1.2;
+}
+
+.header-buttons button:last-child {
+  background-color: var(--fede-color, #2c5aa0);
+}
+
+.header-buttons button:last-child:hover {
+  background-color: var(--fede-color-hover, #1e3d73);
+  transform: translateY(-2px);
+}
+
+.header-buttons button:last-child:active {
+  background-color: var(--fede-color-active, #1a2e61);
 }
 
 .search-filters {
@@ -433,7 +706,7 @@ h2 {
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 30px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 15px rgb(0, 0, 0, 0.4);
   display: grid;
   grid-template-columns: 1fr 1.2fr;
   gap: 30px;
@@ -492,29 +765,28 @@ button {
 }
 
 .btn-secondary {
-  background-color: #6c757d;
+  background-color: var(--secondary-color, #6c757d);
   color: white;
 }
 
 .btn-secondary:hover {
-  background-color: #5a6268;
+  background-color: var(--secondary-color-hover, #5a6268);
   transform: translateY(-2px);
 }
 
 .btn-logout {
-  background-color: #dc3545;
+  background-color: var(--negative-color, #dc3545);
   color: white;
 }
 
 .btn-logout:hover {
-  background-color: #c82333;
+  background-color: var(--negative-color-hover, #c82333);
   transform: translateY(-2px);
 }
 
 .search-button {
   background-color: var(--fede-color, #2c5aa0);
   color: white;
-  margin-top: 10px;
   justify-content: center;
 }
 
@@ -528,7 +800,7 @@ button {
   background: white;
   border-radius: 12px;
   padding: 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   margin-top: 20px;
 }
 
@@ -551,7 +823,7 @@ button {
 }
 
 .download-selected-btn {
-  background-color: #4CAF50;
+  background-color: var(--positive-color, #4caf50);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -564,15 +836,15 @@ button {
 }
 
 .download-selected-btn:hover {
-  background-color: #45a049;
+  background-color: var(--positive-color-hover, #45a049);
 }
 
 .download-selected-btn:active {
-  background-color: #3d8b40;
+  background-color: var(--positive-color-active, #3d8b40);
 }
 
 .results-count {
-  color: #6b7280;
+  color: var(--secondary-color, #6b7280);
   font-size: 0.95rem;
   font-weight: 500;
 }
@@ -604,15 +876,15 @@ td:first-child {
   text-align: center;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   width: 18px;
   height: 18px;
   cursor: pointer;
 }
 
 .factures-table th {
-  background-color: #f9fafb;
-  color: #374151;
+  background-color: var(--background-color, #f9fafb);
+  color: var(--secondary-color, #374151);
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.85rem;
@@ -620,7 +892,7 @@ input[type="checkbox"] {
 }
 
 .facture-row:hover {
-  background-color: #f8f9fa;
+  background-color: var(--background-color-hover, #f8f9fa);
 }
 
 .actions-cell {
@@ -646,14 +918,14 @@ input[type="checkbox"] {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  color: #6b7280;
+  color: var(--secondary-color, #6b7280);
   font-size: 1.1rem;
 }
 
 .no-results-icon {
   font-size: 3rem;
   margin-bottom: 15px;
-  color: #d1d5db;
+  color: var(--secondary-color, #d1d5db);
 }
 
 .pagination {
@@ -678,6 +950,17 @@ input[type="checkbox"] {
   align-items: center;
   gap: 10px;
   font-size: 1.2rem;
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.filter-buttons button {
+  width: 100%;
+  justify-content: center;
 }
 
 /* Responsive adjustments */
