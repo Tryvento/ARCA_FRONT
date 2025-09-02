@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useAuthStore } from './auth'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
 
 export const useSuppliersStore = defineStore('suppliers', () => {
     const authStore = useAuthStore()
@@ -20,16 +18,15 @@ export const useSuppliersStore = defineStore('suppliers', () => {
             );
             console.log('Proveedores obtenidos:', response.data);
             
-            // Transform and save suppliers data to JSON file
+            // Transform suppliers data
             const suppliersData = response.data.map(supplier => ({
                 nit: supplier.nit,
                 complete_name: supplier.complete_name || `${supplier.nombre} ${supplier.apellido}`.trim()
             }));
             
-            // Write to JSON file
-            const filePath = join(process.cwd(), 'src', 'assests', 'utils', 'suppliers.json');
-            await writeFile(filePath, JSON.stringify(suppliersData, null, 2));
-            console.log('Archivo de proveedores actualizado correctamente');
+            // Store in memory
+            localStorage.setItem('suppliers', JSON.stringify(suppliersData));
+            console.log('Datos de proveedores almacenados en localStorage');
             
             return response.data;
         } catch (error) {
