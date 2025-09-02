@@ -4,6 +4,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { onMounted, onUnmounted, provide, ref, watch } from 'vue'
 import { useAlertsProviders } from './stores/useAlerts'
 import AlertContainer from './components/AlertContainer.vue'
+import HelpButton from './components/HelpButton.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -79,6 +80,7 @@ watch(
   <router-view></router-view>
   <img src="./assests/images/l_fdz_v.png" alt="" class="logo">
   <AlertContainer position="top-left"/>
+  <HelpButton/>
 </template>
 
 <style scoped>
