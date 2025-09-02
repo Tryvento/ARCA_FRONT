@@ -3,6 +3,7 @@ import { useAuthStore } from './stores/auth'
 import { useRouter, useRoute } from 'vue-router'
 import { onMounted, onUnmounted, provide, ref, watch } from 'vue'
 import { useAlertsProviders } from './stores/useAlerts'
+import { useSuppliersStore } from './stores/suppliers'
 import AlertContainer from './components/AlertContainer.vue'
 import HelpButton from './components/HelpButton.vue'
 
@@ -56,6 +57,7 @@ onMounted(() => {
   }
   // Iniciar el intervalo recursivo
   checkEveryFiveSeconds()
+  useSuppliersStore().getSuppliers()
 })
 
 // Limpiar el timeout cuando el componente se desmonte
