@@ -171,6 +171,7 @@ const updatePassword = async () => {
 }
 
 onMounted(() => {
+  console.log(import.meta.env.VITE_API_URL)
   if (authStore.token) {
     router.push('/search')
   }
@@ -327,7 +328,7 @@ button[disabled] {
 }
 
 #restore-modal {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100dvw;

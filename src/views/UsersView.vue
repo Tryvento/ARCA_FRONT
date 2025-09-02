@@ -218,7 +218,7 @@ const fetchUsers = async () => {
   isLoading.value = true
   const skip = (currentPage.value - 1) * pageSize.value
   try {
-    const response = await axios.get('http://localhost:8000/users', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/users`, {
       params: {
         skip,
         limit: pageSize.value,
@@ -242,7 +242,7 @@ const searchUsers = async (complete_name, user_name, location_code, is_active) =
   isLoading.value = true
   console.log('REQUERIMENTOS BUSQUEDA:', complete_name, user_name, location_code, is_active)
   try {
-    const response = await axios.get('http://localhost:8000/users/search/', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/search/`, {
       params: {
         complete_name,
         user_name,

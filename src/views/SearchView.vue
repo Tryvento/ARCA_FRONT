@@ -5,8 +5,7 @@
       <span class="header-user">
         <h2>
           {{
-            locationsList.find((location) => location.code === authStore.userData.location_code)
-              .name
+            locationsList.find((location) => location.code === authStore.userData.location_code)?.name || 'Ubicación desconocida'
           }}
         </h2>
         <h2>{{ authStore.userData.complete_name }}</h2>

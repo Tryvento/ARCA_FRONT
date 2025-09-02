@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('userAuth', () => {
       }
 
       const response = await axios.post(
-        'http://localhost:8000/login',
+        `${import.meta.env.VITE_API_URL}/login`,
         {
           user_name: user_name.trim(),
           password: password,
@@ -42,6 +42,7 @@ export const useAuthStore = defineStore('userAuth', () => {
                 }
 
             })
+            console.log("USER RESPONSE: ", userResponse.data)
             userData.value.user_name = userResponse.data.user_name
             userData.value.complete_name = userResponse.data.complete_name
             userData.value.location_code = userResponse.data.location_code
