@@ -58,6 +58,7 @@
 
 <script>
 import { useAuthStore } from '@/stores/auth'
+import { useSuppliersStore } from '../stores/suppliers'
 import { inject } from 'vue'
 import axios from 'axios'
 
@@ -131,6 +132,17 @@ export default {
         this.isLoading = false
       }
     },
+    async updateSuppliers() {
+      isLoading.value = true
+      try {
+        await useSuppliersStore().getSuppliers()
+      } catch (error) {
+        console.error('Error al obtener proveedores:', error.response?.data || error.message)
+        alerts.error('Error al obtener proveedores', 5000)
+      } finally {
+        isLoading.value = false
+      }
+    }
   },
 }
 </script>

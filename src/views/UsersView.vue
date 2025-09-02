@@ -6,6 +6,7 @@
         <button @click="router.back()" class="btn-secondary" title="Volver">
           <ion-icon name="arrow-back"></ion-icon>
         </button>
+
         <button @click="showNewUserWindow = true" title="Agregar usuario">
           <ion-icon name="add"></ion-icon>
         </button>
