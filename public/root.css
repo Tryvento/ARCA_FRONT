@@ -6,9 +6,9 @@
     --negative-color: #d84141;
     --negative-color-hover: #c62828;
     --negative-color-active: #ef5350;
-    --warning-color:rgb(168, 187, 60);
-    --warning-color-hover: #b3c23d;
-    --warning-color-active: #d8ce41;
+    --warning-color:rgb(187, 121, 60);
+    --warning-color-hover: rgb(161, 101, 45);
+    --warning-color-active: rgb(202, 140, 82);
     --info-color: #2196f3;
     --info-color-hover: #1976d2;
     --info-color-active: #64b5f6;
