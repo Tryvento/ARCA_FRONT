@@ -152,7 +152,7 @@
               <th><input type="checkbox" v-model="selectAll" @change="toggleSelectAll" /></th>
               <th>Fecha</th>
               <th>NIT</th>
-              <th v-if="typeSearch === 'PROVEEDORES' && hasSearched">Proveedor</th>
+              <th v-if="typeSearch === 'PROVEEDORES'">Proveedor</th>
               <th>N° Factura</th>
               <th v-if="selectedLocation === 'all'">Ubicación</th>
               <th>Acciones</th>
@@ -163,7 +163,7 @@
               <td><input type="checkbox" v-model="selectedFiles" :value="facture.file_name" /></td>
               <td>{{ formatDate(facture.date) }}</td>
               <td>{{ facture.nit || 'N/A' }}</td>
-              <td v-if="typeSearch === 'PROVEEDORES' && hasSearched">{{ facture.nit ? (supplierNames[facture.nit] || 'N/A') : 'N/A' }}</td>
+              <td v-if="typeSearch === 'PROVEEDORES' && facture.nit">{{ facture.nit === '860010522' ? 'FEDEARROZ' : (supplierNames[facture.nit] || 'N/A') }}</td>
               <td>{{ facture.bill_number || 'N/A' }}</td>
               <td v-if="selectedLocation === 'all'">
                 {{ getLocationFromInvoice(facture.bill_number) }}
@@ -272,7 +272,6 @@ const getSupplierName = async (nit) => {
 const typeSearch = ref('FEDEARROZ')
 const typeFile = ref('FAC')
 const dateRange = ref('2')
-const hasSearched = ref(false)
 
 const selectedLocation = ref('')
 const start_date = ref(null)
@@ -294,12 +293,12 @@ const clearFilters = () => {
   typeSearch.value = 'FEDEARROZ'
   typeFile.value = 'FAC'
   dateRange.value = '2'
-  nit_search.value = ''
-  start_date.value = ''
-  end_date.value = ''
   selectedLocation.value = authStore.userData.location_code
-  hasSearched.value = false
-  searchFactures()
+  start_date.value = null
+  end_date.value = null
+  nit_search.value = null
+  currentPage.value = 1
+  alerts.info(`Limpieza realizada correctamente`, 5000)
 }
 
 const toggleSelectAll = () => {
@@ -339,7 +338,6 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
-      hasSearched.value = true
       alerts.success(`Busqueda realizada correctamente`, 5000)
       alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
@@ -360,7 +358,6 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
-      hasSearched.value = true
       alerts.success(`Busqueda realizada correctamente`, 5000)
       alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
@@ -389,7 +386,6 @@ const searchFactures = async (isPagination = false) => {
         filesData.value = response.data || []
         totalPages.value = response.total_pages || 1
         totalFiles.value = response.total_items || 0
-        hasSearched.value = true
         alerts.success(`Busqueda realizada correctamente`, 5000)
         alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
       } else {
@@ -425,7 +421,6 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
-      hasSearched.value = true
       alerts.success(`Busqueda realizada correctamente`, 5000)
       alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
       console.log(filesData.value)
@@ -452,7 +447,6 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
-      hasSearched.value = true
       alerts.success(`Busqueda realizada correctamente`, 5000)
       alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
