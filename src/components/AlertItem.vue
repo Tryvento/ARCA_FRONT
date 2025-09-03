@@ -146,13 +146,19 @@ export default {
 <style scoped>
 .alert {
   position: relative;
-  margin-bottom: 0.75rem;
-  padding: 1rem 1rem;
+  padding: 12px 16px;
+  margin-bottom: 12px;
   border-radius: 4px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: all 0.3s ease;
-  will-change: transform, opacity;
+  display: inline-flex;
+  flex-direction: column;
+  max-width: 100%;
+  width: fit-content;
 }
 
 /* Alert enter/leave transitions */
@@ -173,7 +179,9 @@ export default {
 .alert_content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  width: 100%;
+  white-space: nowrap;
 }
 .alert_message {
   flex: 1;
