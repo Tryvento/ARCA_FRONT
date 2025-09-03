@@ -59,7 +59,7 @@
                 <th>ID</th>
                 <th>Usuario</th>
                 <th>Fecha</th>
-                <th>Archivos</th>
+                <th>Registros</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -68,7 +68,7 @@
                 <td>{{ log.id }}</td>
                 <td>{{ log.user_name }}</td>
                 <td>{{ formatDate(log.download_date) }}</td>
-                <td>{{ log.downloaded_records.length }} archivos</td>
+                <td>{{ log.downloaded_records.length }} registros</td>
                 <td class="actions-cell">
                   <button class="view-btn" @click="showLogDetails(log)">
                     <ion-icon name="eye"></ion-icon> Ver
@@ -111,7 +111,7 @@
               <div class="modal-value">{{ formatDateTime(selectedLog.download_date) }}</div>
             </div>
             
-            <h3 class="files-title">Archivos descargados ({{ selectedLog.downloaded_records.length }})</h3>
+            <h3 class="files-title">Registros descargados ({{ selectedLog.downloaded_records.length }})</h3>
             <div class="files-list">
               <div v-for="(file, index) in selectedLog.downloaded_records" :key="index" class="file-item">
                 <div class="file-row">

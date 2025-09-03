@@ -19,11 +19,11 @@
         >
           <ion-icon name="people"></ion-icon> 
         </button>
+        <button v-if="authStore.userData.admin" @click="showUploadFilesWindow = true" class="btn-upload" title="Subir archivos">
+          <ion-icon name="cloud-upload"></ion-icon>
+        </button>
         <button @click="(authStore.logout(), router.push('/'))" class="btn-logout" title="Cerrar sesión">
           <ion-icon name="log-out"></ion-icon>
-        </button>
-        <button v-if="authStore.userData.admin" @click="showUploadFilesWindow = true" title="Subir archivos">
-          <ion-icon name="cloud-upload"></ion-icon>
         </button>
       </div>
     </div>
@@ -134,14 +134,17 @@
       <div class="results-header">
         <h2>Resultados de la búsqueda</h2>
         <div class="header-actions">
-          <span class="results-count" v-if="selectedFiles.length === 0">{{ totalFiles }} registros encontrados</span>
-          <button
-            v-if="selectedFiles.length > 0"
-            @click="downloadSelected"
-            class="download-selected-btn"
-          >
-            <ion-icon name="download"></ion-icon> Descargar {{ selectedFiles.length }} seleccionados
-          </button>
+          <transition name="fade-slide" mode="out-in">
+            <span class="results-count" v-if="selectedFiles.length === 0" key="count">{{ totalFiles }} registros encontrados</span>
+            <button
+              v-else
+              key="download"
+              @click="downloadSelected"
+              class="download-selected-btn"
+            >
+              <ion-icon name="download"></ion-icon> Descargar {{ selectedFiles.length }} seleccionados
+            </button>
+          </transition>
         </div>
       </div>
 
@@ -788,6 +791,31 @@ h2 {
   background: white;
 }
 
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
 .filter-input:focus,
 .filter-select:focus {
   outline: none;
@@ -816,16 +844,6 @@ button {
 
 .btn-secondary:hover {
   background-color: var(--secondary-color-hover, #5a6268);
-  transform: translateY(-2px);
-}
-
-.btn-logout {
-  background-color: var(--negative-color, #dc3545);
-  color: white;
-}
-
-.btn-logout:hover {
-  background-color: var(--negative-color-hover, #c82333);
   transform: translateY(-2px);
 }
 
@@ -878,6 +896,7 @@ button {
   align-items: center;
   gap: 5px;
   transition: background-color 0.3s;
+  animation: fadeIn 0.5s;
 }
 
 .download-selected-btn:hover {
