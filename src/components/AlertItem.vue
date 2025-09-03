@@ -1,11 +1,12 @@
 <template>
-  <transition name="alert-fade">
-    <div
-      :class="['alert', `alert--${type}`]"
-      @mouseover="pauseTimer"
-      @mouseleave="resumeTimer"
-      v-if="isVisible"
-    >
+  <div
+    ref="alertElement"
+    :class="['alert', `alert--${type}`]"
+    @mouseover="pauseTimer"
+    @mouseleave="resumeTimer"
+    v-show="isVisible"
+    :style="{ width: 'fit-content' }"
+  >
       <div class="alert_content">
         <span class="alert_message">{{ message }}</span>
         <button v-if="!duration" @click="close" class="alert_close" aria-label="Cerrar Alerta">
@@ -18,7 +19,6 @@
         :style="progressStyle"
       ></div>
     </div>
-  </transition>
 </template>
 
 <script>
@@ -59,6 +59,7 @@ export default {
       progressWidth: '100%',  // Ancho actual de la barra de progreso
       timer: null,           // Referencia al temporizador de la alerta
       remainingTime: this.duration, // Tiempo restante para que se cierre
+      observer: null,        // Observer para detectar cambios en el ancho
     }
   },
   
@@ -79,6 +80,16 @@ export default {
     // Inicia el temporizador si se especificó una duración
     if (this.duration > 0) {
       this.startTimer()
+    }
+    
+    // Configurar el observer para detectar cambios en el ancho
+    this.setupWidthObserver()
+  },
+  
+  beforeUnmount() {
+    this.clearTimer()
+    if (this.observer) {
+      this.observer.disconnect()
     }
   },
   
@@ -132,12 +143,29 @@ export default {
     
     // Cierra la alerta
     close() {
+      // Emite el evento de cierre
+      this.$emit('close', this.id)
       this.isVisible = false
-      // Pequeño retraso para permitir la animación de salida
-      setTimeout(() => {
-        // Emite el evento 'close' con el ID de la alerta
-        this.$emit('close', this.id)
-      }, 300) // Coincide con la duración de la transición CSS
+      this.clearTimer()
+    },
+    
+    setupWidthObserver() {
+      // Usar ResizeObserver para detectar cambios en el ancho del alerta
+      if (typeof ResizeObserver !== 'undefined') {
+        this.observer = new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            const width = entry.contentRect.width
+            const wrapper = this.$el.closest('.alert-wrapper')
+            if (wrapper) {
+              wrapper.style.setProperty('--alert-width', `${width}px`)
+            }
+          }
+        })
+        
+        if (this.$refs.alertElement) {
+          this.observer.observe(this.$refs.alertElement)
+        }
+      }
     },
   },
 }

@@ -737,16 +737,20 @@ h2 {
 }
 
 .header-buttons button:last-child {
-  background-color: var(--fede-color, #2c5aa0);
+  background-color: var(--error-color, #2c5aa0);
 }
 
 .header-buttons button:last-child:hover {
-  background-color: var(--fede-color-hover, #1e3d73);
+  background-color: var(--error-color-hover, #1e3d73);
   transform: translateY(-2px);
 }
 
 .header-buttons button:last-child:active {
-  background-color: var(--fede-color-active, #1a2e61);
+  background-color: var(--error-color-active, #1a2e61);
+}
+
+.cloud-upload {
+  background-color: var(--fede-color, #2c5aa0);
 }
 
 .search-filters {

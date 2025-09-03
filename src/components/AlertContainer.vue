@@ -50,15 +50,20 @@ export default {
 <template>
   <div :class="['alerts-container', `alerts-container--${position}`]">
     <TransitionGroup name="alert-list" tag="div" class="alerts-list">
-      <AlertItem
-        v-for="alert in alerts"
-        :key="alert.id"
-        :id="alert.id"
-        :message="alert.message"
-        :type="alert.type"
-        :duration="alert.duration"
-        @close="removeAlert"
-      />
+      <div 
+        v-for="alert in alerts" 
+        :key="alert.id" 
+        class="alert-wrapper"
+        :data-alert-id="alert.id"
+      >
+        <AlertItem
+          :id="alert.id"
+          :message="alert.message"
+          :type="alert.type"
+          :duration="alert.duration"
+          @close="removeAlert"
+        />
+      </div>
     </TransitionGroup>
   </div>
 </template>
@@ -68,6 +73,7 @@ export default {
   position: fixed;
   z-index: 9999;
   width: 520px;
+  height: 100dvh;
   max-width: 90dvw;
   pointer-events: none;
 }
@@ -105,24 +111,34 @@ export default {
 
 /* List animation */
 .alert-list-move,
-.alert-list-enter-active,
-.alert-list-leave-active {
+.alert-list-enter-active {
   transition: all 0.3s ease;
+}
+
+.alert-list-leave-active {
+  transition: all 0.3s cubic-bezier(0.5, 0, 0, 1);
+  position: absolute;
+  width: var(--alert-width, auto);
+  max-width: 100%;
 }
 
 .alert-list-enter-from,
 .alert-list-leave-to {
   opacity: 0;
-  transform: translateY(-30px);
+  transform: translateX(-100%);
 }
 
-/* Ensure leaving items are taken out of layout flow so moving animations work correctly */
-.alert-list-leave-active {
-  position: absolute;
+.alert-list-leave-to {
+  transform: translateX(-100%) scale(0.8);
+}
+
+.alert-wrapper {
+  position: relative;
   width: 100%;
+  max-width: 100%;
+  transition: all 0.3s ease;
 }
 
-/* For smooth moving of items */
 .alert-list-move {
   transition: transform 0.3s ease;
 }
