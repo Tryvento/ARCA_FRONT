@@ -232,6 +232,10 @@
   onMounted(() => {
     // Los datos ya están definidos en logs.value, no es necesario cargarlos de nuevo
     searchLogs()
+    if (!authStore.userData.admin){
+      alerts.error('No tienes permiso para acceder a esta página', 5000)
+      router.push('/search')
+    }
   })
   </script>
   

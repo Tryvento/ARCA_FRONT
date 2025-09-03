@@ -329,7 +329,13 @@ const handleResetPassword = (user_name) => {
   showResetPasswordWindow.value = true
 }
 
-onMounted(fetchUsers)
+onMounted(() => {
+  fetchUsers()
+  if (!authStore.userData.admin){
+    alerts.error('No tienes permiso para acceder a esta página', 5000)
+    router.push('/search')
+  }
+})
 
 const nextPage = () => {
   currentPage.value++
