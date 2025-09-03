@@ -194,7 +194,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject, provide, watch } from 'vue'
+import { ref, onMounted, inject, provide, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useFacturesStore } from '../stores/factures'
 import { useLogsStore } from '../stores/logs'
@@ -250,9 +250,12 @@ const getSupplierName = async (nit) => {
     const supplierData = await suppliersStore.getSuppliers(nit)
     let supplierName = 'N/A'
     
-    if (supplierData && supplierData.length > 0) {
-      const supplier = supplierData[0]
-      supplierName = supplier.complete_name || (supplier.name + ' ' + (supplier.last_name || '')).trim() || 'N/A'
+    if (supplierData) {
+      // Handle both array and single object responses
+      const supplier = Array.isArray(supplierData) ? supplierData[0] : supplierData
+      if (supplier) {
+        supplierName = supplier.complete_name || supplier.name || 'N/A'
+      }
     }
     
     // Update cache
