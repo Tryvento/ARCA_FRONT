@@ -736,21 +736,30 @@ h2 {
   scale: 1.2;
 }
 
-.header-buttons button:last-child {
-  background-color: var(--error-color, #2c5aa0);
+.btn-logout {
+  background-color: var(--negative-color, #2c5aa0);
 }
 
-.header-buttons button:last-child:hover {
-  background-color: var(--error-color-hover, #1e3d73);
+.btn-logout:hover {
+  background-color: var(--negative-color-hover, #1e3d73);
   transform: translateY(-2px);
 }
 
-.header-buttons button:last-child:active {
-  background-color: var(--error-color-active, #1a2e61);
+.btn-logout:active {
+  background-color: var(--negative-color-active, #1a2e61);
 }
 
-.cloud-upload {
+.btn-upload {
   background-color: var(--fede-color, #2c5aa0);
+}
+
+.btn-upload:hover {
+  background-color: var(--fede-color-hover, #1e3d73);
+  transform: translateY(-2px);
+}
+
+.btn-upload:active {
+  background-color: var(--fede-color-active, #1a2e61);
 }
 
 .search-filters {
