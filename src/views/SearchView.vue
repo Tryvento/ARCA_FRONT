@@ -172,7 +172,7 @@
                 {{ getLocationFromInvoice(facture.bill_number) }}
               </td>
               <td class="actions-cell">
-                <button class="download-btn" @click="() => downloadFile(facture)">
+                <button class="download-btn" @click="downloadFile(facture)">
                   <ion-icon name="download"></ion-icon> Descargar
                 </button>
               </td>
@@ -194,14 +194,18 @@
   <transition name="fade">
     <UploadFiles v-if="showUploadFilesWindow" @close="showUploadFilesWindow = false" />
   </transition>
-
-  <!-- Download Confirmation Modal -->
+  
   <transition name="fade">
     <div class="modal" v-if="showDownloadConfirm">
       <div class="modal-content">
-        <p>¿Estás seguro de que deseas descargar {{ downloadFilesCount }} archivo{{ downloadFilesCount !== 1 ? 's' : '' }}?</p>
+        <p v-if="pendingDownload?.type === 'single'">
+          ¿Estás seguro de que deseas descargar este archivo?
+        </p>
+        <p v-else>
+          ¿Estás seguro de que deseas descargar {{ selectedFiles.length }} archivos seleccionados?
+        </p>
         <div class="modal-buttons">
-          <button @click="confirmDownload" class="modal-confirm-button">Sí</button>
+          <button @click="confirmDownload" class="modal-button">Sí</button>
           <button @click="cancelDownload" class="modal-cancel-button">No</button>
         </div>
       </div>
@@ -299,6 +303,8 @@ const filesData = ref([])
 const files_paths = ref('')
 const selectedFiles = ref([])
 const selectAll = ref(false)
+const showDownloadConfirm = ref(false)
+const pendingDownload = ref(null)
 
 const totalPages = ref(1)
 const currentPage = ref(1)
@@ -325,79 +331,12 @@ const toggleSelectAll = () => {
   }
 }
 
-const showDownloadConfirm = ref(false)
-const downloadFilesCount = ref(0)
-const pendingDownloadFiles = ref([])
-const pendingDownloadFactureData = ref(null)
-
 const downloadSelected = () => {
   if (selectedFiles.value.length === 0) {
     return
   }
-  showDownloadModal(selectedFiles.value)
-}
-
-const downloadFile = (facture) => {
-  showDownloadModal([facture.file_name])
-}
-
-const showDownloadModal = (fileNames) => {
-  downloadFilesCount.value = fileNames.length
-  pendingDownloadFiles.value = fileNames
+  pendingDownload.value = { type: 'multiple', fileNames: [...selectedFiles.value] }
   showDownloadConfirm.value = true
-}
-
-const confirmDownload = async () => {
-  showDownloadConfirm.value = false
-  if (pendingDownloadFiles.value.length > 0) {
-    if (pendingDownloadFiles.value.length === 1 && pendingDownloadFactureData.value) {
-      // Single file download with logging
-      const facture = pendingDownloadFactureData.value
-      let path = ''
-      if (typeSearch.value === 'FEDEARROZ') {
-        path = selectedLocation.value
-      } else if (typeSearch.value === 'PROVEEDORES') {
-        path = 'suppliers'
-      }
-      switch (typeFile.value) {
-        case 'FAC':
-          path += '/factura-ubl'
-          break
-        case 'NC':
-          path += '/nc-ubl'
-          break
-        case 'ND':
-          path += '/nd-ubl'
-          break
-        case 'SA':
-          path = 'soportes-adquisicion'
-          break
-        default:
-          break
-      }
-      files_paths.value = await facturesStore.getFilesPath(path, facture.file_name)
-      facturesStore.downloadFile(files_paths.value.pdf, files_paths.value.xml, facture.file_name)
-      const logData = {
-        bill_number: facture.bill_number,
-        date: facture.date,
-        file_name: facture.file_name,
-        nit: facture.nit
-      }
-      useLogsStore().createLog(authStore.userData.user_name, [logData])
-      alerts.info(`Factura ${facture.bill_number} descargada`, 5000)
-    } else {
-      // Multiple files download
-      downloadMultipleFiles(pendingDownloadFiles.value)
-    }
-  }
-  pendingDownloadFiles.value = []
-  pendingDownloadFactureData.value = null
-}
-
-const cancelDownload = () => {
-  showDownloadConfirm.value = false
-  pendingDownloadFiles.value = []
-  pendingDownloadFactureData.value = null
 }
 
 const searchFactures = async (isPagination = false) => {
@@ -546,6 +485,65 @@ const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
   return new Date(dateString).toLocaleDateString('es-ES', options)
+}
+
+const downloadFile = async (facture) => {
+  pendingDownload.value = { type: 'single', facture }
+  showDownloadConfirm.value = true
+}
+
+const confirmDownload = async () => {
+  if (!pendingDownload.value) return
+  
+  isLoading.value = true
+  showDownloadConfirm.value = false
+  
+  if (pendingDownload.value.type === 'single') {
+    const { facture } = pendingDownload.value
+    let path = ''
+    if (typeSearch.value === 'FEDEARROZ') {
+      path = selectedLocation.value
+    } else if (typeSearch.value === 'PROVEEDORES') {
+      path = 'suppliers'
+    }
+    switch (typeFile.value) {
+      case 'FAC':
+        path += '/factura-ubl'
+        break
+      case 'NC':
+        path += '/nc-ubl'
+        break
+      case 'ND':
+        path += '/nd-ubl'
+        break
+      case 'SA':
+        path = 'soportes-adquisicion'
+        break
+      default:
+        break
+    }
+    files_paths.value = await facturesStore.getFilesPath(path, facture.file_name)
+    facturesStore.downloadFile(files_paths.value.pdf, files_paths.value.xml, facture.file_name)
+    const logData = {
+      bill_number: facture.bill_number,
+      date: facture.date,
+      file_name: facture.file_name,
+      nit: facture.nit
+    }
+    useLogsStore().createLog(authStore.userData.user_name, [logData])
+    alerts.info(`Factura ${facture.bill_number} descargada`, 5000)
+  } else if (pendingDownload.value.type === 'multiple') {
+    const { fileNames } = pendingDownload.value
+    await downloadMultipleFiles(fileNames)
+  }
+  
+  pendingDownload.value = null
+  isLoading.value = false
+}
+
+const cancelDownload = () => {
+  showDownloadConfirm.value = false
+  pendingDownload.value = null
 }
 
 const downloadMultipleFiles = async (fileNames) => {
@@ -1047,6 +1045,75 @@ input[type='checkbox'] {
   font-size: 3rem;
   margin-bottom: 15px;
   color: var(--secondary-color, #d1d5db);
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  font-family: var(--font-family);
+  font-size: 1.1rem;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.modal-button {
+  background-color: var(--positive-color, #4caf50);
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-button:hover {
+  background-color: var(--positive-color-hover, #45a049);
+}
+
+.modal-cancel-button {
+  background-color: var(--negative-color, #f44336);
+  color: white;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-cancel-button:hover {
+  background-color: var(--negative-color-hover, #d32f2f);
 }
 
 .pagination {
