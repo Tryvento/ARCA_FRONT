@@ -43,7 +43,7 @@ export function useAlertsProviders() {
         info:(message, duration = 10000) => addAlert({message, type: 'info', duration}),
         success:(message, duration = 10000) => addAlert({message, type: 'success', duration}),
         warning:(message, duration = 10000) => addAlert({message, type: 'warning', duration}),
-        error:(message, duration = 10000) => addAlert({message, type: 'error', duration}),
+        error:(message) => addAlert({message, type: 'error'}),
         remove: removeAlert,
         clearAll: clearAll
     }

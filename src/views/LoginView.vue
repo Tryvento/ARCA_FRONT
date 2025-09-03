@@ -38,6 +38,7 @@
       <span><span class="fede-color">FEDEARROZ</span> - FEDERACION NACIONAL DE ARROCEROS</span>
       <span>Version 1.0.0</span>
       <span>© 2025 Copyright Fedearroz. Todos los derechos reservados.</span>
+      <span class="secret">Desarrollado por David Carrillo</span>
     </div>
   </div>
   <transition name="fade">
@@ -424,4 +425,9 @@ button[disabled] {
   opacity: 0;
 }
 
+.secret{
+    color: var(--fede-color);
+    font-weight: bolder;
+    opacity: .09;
+}
 </style>

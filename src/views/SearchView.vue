@@ -102,7 +102,7 @@
             <select v-model="selectedLocation" class="filter-select">
               <option value="all" v-if="typeFile !== 'SA'">Todas las ubicaciones</option>
               <option v-for="location in locationsList" :key="location.code" :value="location.code">
-                {{ location.name }} ({{ location.code }})
+                ({{ location.code }}) / {{ location.name }}
               </option>
               <option value="others">OTROS</option>
             </select>
@@ -236,7 +236,7 @@ const showUploadFilesWindow = ref(false)
 provide('showUploadFilesWindow', showUploadFilesWindow)
 
 const locationsList = [...locations.locations].sort((a, b) =>
-  a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }),
+  a.code.localeCompare(b.code, 'es', { numeric: true })
 )
 
 const getLocationFromInvoice = (invoiceNumber) => {
@@ -521,7 +521,7 @@ const confirmDownload = async () => {
       nit: facture.nit
     }
     useLogsStore().createLog(authStore.userData.user_name, [logData])
-    alerts.info(`Factura ${facture.bill_number} descargada`, 5000)
+    alerts.info(`Registro ${facture.bill_number} descargado`, 5000)
   } else if (pendingDownload.value.type === 'multiple') {
     const { fileNames } = pendingDownload.value
     await downloadMultipleFiles(fileNames)

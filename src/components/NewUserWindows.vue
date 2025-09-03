@@ -16,7 +16,7 @@
           <select id="location_code" v-model="location_code">
             <option value="">Seleccione una ubicación</option>
             <option v-for="location in locationsList" :key="location.code" :value="location.code">
-              {{ location.name }}
+              ({{ location.code }}) / {{ location.name }}
             </option>
           </select>
         </label>
@@ -40,7 +40,7 @@ import locations from '../assests/utils/locations.json'
 const alerts = inject('alerts')
 
 const locationsList = [...locations.locations].sort((a, b) =>
-  a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }),
+  a.code.localeCompare(b.code, 'es', { numeric: true })
 )
 console.log(locationsList)
 
