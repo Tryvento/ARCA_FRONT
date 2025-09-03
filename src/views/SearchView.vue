@@ -163,7 +163,7 @@
               <td><input type="checkbox" v-model="selectedFiles" :value="facture.file_name" /></td>
               <td>{{ formatDate(facture.date) }}</td>
               <td>{{ facture.nit || 'N/A' }}</td>
-              <td v-if="typeSearch === 'PROVEEDORES' && facture.nit">{{ getSupplierName(facture.nit) || 'N/A' }}</td>
+              <td v-if="typeSearch === 'PROVEEDORES' && facture.nit">{{ supplierNames[facture.nit] || 'N/A' }}</td>
               <td>{{ facture.bill_number || 'N/A' }}</td>
               <td v-if="selectedLocation === 'all'">
                 {{ getLocationFromInvoice(facture.bill_number) }}
@@ -194,12 +194,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject, provide } from 'vue'
+import { ref, computed, onMounted, inject, provide, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useFacturesStore } from '../stores/factures'
 import { useLogsStore } from '../stores/logs'
+import { useSuppliersStore } from '../stores/suppliers'
 import locations from '../assests/utils/locations.json'
-import suppliers from '../assests/utils/suppliers.json'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import JSZip from 'jszip'
@@ -231,12 +231,39 @@ const getLocationFromInvoice = (invoiceNumber) => {
   return location ? location.name : 'Otro'
 }
 
-const getSupplierName = (nit) => {
-  if (!nit) return null
-  // Find supplier by NIT (convert both to string for comparison)
-  const nitString = nit.toString()
+const logsStore = useLogsStore()
+const suppliersStore = useSuppliersStore()
+const supplierNames = ref({})
 
-  return suppliers[nitString] || null
+const getSupplierName = async (nit) => {
+  if (!nit) return 'N/A'
+  
+  // Return cached name if available
+  if (supplierNames.value[nit]) {
+    return supplierNames.value[nit]
+  }
+  
+  try {
+    // Set loading state
+    supplierNames.value = { ...supplierNames.value, [nit]: 'Cargando...' }
+    
+    const supplierData = await suppliersStore.getSuppliers(nit)
+    let supplierName = 'N/A'
+    
+    if (supplierData && supplierData.length > 0) {
+      const supplier = supplierData[0]
+      supplierName = supplier.complete_name || (supplier.name + ' ' + (supplier.last_name || '')).trim() || 'N/A'
+    }
+    
+    // Update cache
+    supplierNames.value = { ...supplierNames.value, [nit]: supplierName }
+    return supplierName
+    
+  } catch (error) {
+    console.error('Error fetching supplier:', error)
+    supplierNames.value = { ...supplierNames.value, [nit]: 'N/A' }
+    return 'N/A'
+  }
 }
 
 const typeSearch = ref('FEDEARROZ')
@@ -611,13 +638,29 @@ const nextPage = () => {
 }
 
 onMounted(() => {
-  console.log('SearchView mounted')
-  console.log('User data:', authStore.userData)
   selectedLocation.value = authStore.userData.location_code
-  console.log('Selected location:', selectedLocation.value)
-  console.log('Initial typeFile:', typeFile.value)
   searchFactures()
+  
+  // Pre-fetch supplier names when component mounts
+  if (typeSearch.value === 'PROVEEDORES') {
+    filesData.value.forEach(facture => {
+      if (facture.nit) {
+        getSupplierName(facture.nit)
+      }
+    })
+  }
 })
+
+// Watch for search results to update supplier names
+watch(() => filesData, (newFiles) => {
+  if (typeSearch.value === 'PROVEEDORES') {
+    newFiles.value.forEach(facture => {
+      if (facture.nit && !supplierNames.value[facture.nit]) {
+        getSupplierName(facture.nit)
+      }
+    })
+  }
+}, { deep: true, immediate: true })
 </script>
 
 <style scoped>
