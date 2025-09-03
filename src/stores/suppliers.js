@@ -18,16 +18,6 @@ export const useSuppliersStore = defineStore('suppliers', () => {
       })
       console.log('Proveedores obtenidos:', response.data)
 
-      // Transform suppliers data
-      const suppliersData = response.data.map((supplier) => ({
-        nit: supplier.nit,
-        complete_name: supplier.complete_name || `${supplier.nombre} ${supplier.apellido}`.trim(),
-      }))
-
-      // Store in memory
-      localStorage.setItem('suppliers', JSON.stringify(suppliersData))
-      console.log('Datos de proveedores almacenados en localStorage')
-
       return response.data
     } catch (error) {
       console.error('Error al obtener proveedores:', error.response?.data || error.message)
