@@ -172,7 +172,7 @@
                 {{ getLocationFromInvoice(facture.bill_number) }}
               </td>
               <td class="actions-cell">
-                <button class="download-btn" @click="downloadFile(facture)">
+                <button class="download-btn" @click="() => downloadFile(facture)">
                   <ion-icon name="download"></ion-icon> Descargar
                 </button>
               </td>
@@ -193,6 +193,19 @@
   </div>
   <transition name="fade">
     <UploadFiles v-if="showUploadFilesWindow" @close="showUploadFilesWindow = false" />
+  </transition>
+
+  <!-- Download Confirmation Modal -->
+  <transition name="fade">
+    <div class="modal" v-if="showDownloadConfirm">
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas descargar {{ downloadFilesCount }} archivo{{ downloadFilesCount !== 1 ? 's' : '' }}?</p>
+        <div class="modal-buttons">
+          <button @click="confirmDownload" class="modal-confirm-button">Sí</button>
+          <button @click="cancelDownload" class="modal-cancel-button">No</button>
+        </div>
+      </div>
+    </div>
   </transition>
 </template>
 
@@ -312,11 +325,79 @@ const toggleSelectAll = () => {
   }
 }
 
+const showDownloadConfirm = ref(false)
+const downloadFilesCount = ref(0)
+const pendingDownloadFiles = ref([])
+const pendingDownloadFactureData = ref(null)
+
 const downloadSelected = () => {
   if (selectedFiles.value.length === 0) {
     return
   }
-  downloadMultipleFiles(selectedFiles.value)
+  showDownloadModal(selectedFiles.value)
+}
+
+const downloadFile = (facture) => {
+  showDownloadModal([facture.file_name])
+}
+
+const showDownloadModal = (fileNames) => {
+  downloadFilesCount.value = fileNames.length
+  pendingDownloadFiles.value = fileNames
+  showDownloadConfirm.value = true
+}
+
+const confirmDownload = async () => {
+  showDownloadConfirm.value = false
+  if (pendingDownloadFiles.value.length > 0) {
+    if (pendingDownloadFiles.value.length === 1 && pendingDownloadFactureData.value) {
+      // Single file download with logging
+      const facture = pendingDownloadFactureData.value
+      let path = ''
+      if (typeSearch.value === 'FEDEARROZ') {
+        path = selectedLocation.value
+      } else if (typeSearch.value === 'PROVEEDORES') {
+        path = 'suppliers'
+      }
+      switch (typeFile.value) {
+        case 'FAC':
+          path += '/factura-ubl'
+          break
+        case 'NC':
+          path += '/nc-ubl'
+          break
+        case 'ND':
+          path += '/nd-ubl'
+          break
+        case 'SA':
+          path = 'soportes-adquisicion'
+          break
+        default:
+          break
+      }
+      files_paths.value = await facturesStore.getFilesPath(path, facture.file_name)
+      facturesStore.downloadFile(files_paths.value.pdf, files_paths.value.xml, facture.file_name)
+      const logData = {
+        bill_number: facture.bill_number,
+        date: facture.date,
+        file_name: facture.file_name,
+        nit: facture.nit
+      }
+      useLogsStore().createLog(authStore.userData.user_name, [logData])
+      alerts.info(`Factura ${facture.bill_number} descargada`, 5000)
+    } else {
+      // Multiple files download
+      downloadMultipleFiles(pendingDownloadFiles.value)
+    }
+  }
+  pendingDownloadFiles.value = []
+  pendingDownloadFactureData.value = null
+}
+
+const cancelDownload = () => {
+  showDownloadConfirm.value = false
+  pendingDownloadFiles.value = []
+  pendingDownloadFactureData.value = null
 }
 
 const searchFactures = async (isPagination = false) => {
@@ -465,43 +546,6 @@ const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   const options = { year: 'numeric', month: '2-digit', day: '2-digit' }
   return new Date(dateString).toLocaleDateString('es-ES', options)
-}
-
-const downloadFile = async (facture) => {
-  isLoading.value = true
-  let path = ''
-  if (typeSearch.value === 'FEDEARROZ') {
-    path = selectedLocation.value
-  } else if (typeSearch.value === 'PROVEEDORES') {
-    path = 'suppliers'
-  }
-  switch (typeFile.value) {
-    case 'FAC':
-      path += '/factura-ubl'
-      break
-    case 'NC':
-      path += '/nc-ubl'
-      break
-    case 'ND':
-      path += '/nd-ubl'
-      break
-    case 'SA':
-      path = 'soportes-adquisicion'
-      break
-    default:
-      break
-  }
-  files_paths.value = await facturesStore.getFilesPath(path, facture.file_name)
-  facturesStore.downloadFile(files_paths.value.pdf, files_paths.value.xml, facture.file_name)
-  const logData = {
-    bill_number: facture.bill_number,
-    date: facture.date,
-    file_name: facture.file_name,
-    nit: facture.nit
-  }
-  useLogsStore().createLog(authStore.userData.user_name, [logData])
-  isLoading.value = false
-  alerts.info(`Factura ${facture.bill_number} descargada`, 5000)
 }
 
 const downloadMultipleFiles = async (fileNames) => {
