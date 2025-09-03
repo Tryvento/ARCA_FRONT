@@ -409,8 +409,6 @@ const searchFactures = async (isPagination = false) => {
         filesData.value = response.data || []
         totalPages.value = response.total_pages || 1
         totalFiles.value = response.total_items || 0
-        alerts.success(`Busqueda realizada correctamente`, 5000)
-        alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
       } else {
         filesData.value = []
         totalPages.value = 1
