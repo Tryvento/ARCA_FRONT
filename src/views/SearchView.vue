@@ -326,8 +326,6 @@ const searchFactures = async (isPagination = false) => {
     currentPage.value = 1
   }
 
-  hasSearched.value = true
-
   if (selectedLocation.value === 'all' && typeFile.value !== 'SA') {
     isLoading.value = true
     try {
@@ -341,6 +339,7 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
+      hasSearched.value = true
       alerts.success(`Busqueda realizada correctamente`, 5000)
       alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
@@ -361,6 +360,7 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
+      hasSearched.value = true
       alerts.success(`Busqueda realizada correctamente`, 5000)
       alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
@@ -389,6 +389,7 @@ const searchFactures = async (isPagination = false) => {
         filesData.value = response.data || []
         totalPages.value = response.total_pages || 1
         totalFiles.value = response.total_items || 0
+        hasSearched.value = true
         alerts.success(`Busqueda realizada correctamente`, 5000)
         alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
       } else {
@@ -424,6 +425,7 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
+      hasSearched.value = true
       alerts.success(`Busqueda realizada correctamente`, 5000)
       alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
       console.log(filesData.value)
@@ -450,6 +452,7 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
+      hasSearched.value = true
       alerts.success(`Busqueda realizada correctamente`, 5000)
       alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
