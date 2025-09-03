@@ -361,8 +361,6 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
-      alerts.success(`Busqueda realizada correctamente`, 5000)
-      alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
       console.error(error)
     } finally {
@@ -381,8 +379,6 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
-      alerts.success(`Busqueda realizada correctamente`, 5000)
-      alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
       console.error(error)
     } finally {
@@ -442,8 +438,6 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
-      alerts.success(`Busqueda realizada correctamente`, 5000)
-      alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
       console.log(filesData.value)
     } catch (error) {
       console.error(error)
@@ -468,8 +462,6 @@ const searchFactures = async (isPagination = false) => {
       filesData.value = response.data
       totalPages.value = response.total_pages
       totalFiles.value = response.total_items
-      alerts.success(`Busqueda realizada correctamente`, 5000)
-      alerts.info(`Se econtraron ${totalFiles.value} registros`, 7000)
     } catch (error) {
       console.error(error)
     } finally {
