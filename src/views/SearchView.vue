@@ -132,15 +132,13 @@
       <div class="results-header">
         <h2>Resultados de la búsqueda</h2>
         <div class="header-actions">
-          <span class="results-count">{{ totalFiles }} registros encontrados</span>
+          <span class="results-count" v-if="selectedFiles.length === 0">{{ totalFiles }} registros encontrados</span>
           <button
             v-if="selectedFiles.length > 0"
             @click="downloadSelected"
             class="download-selected-btn"
           >
-            <ion-icon name="download"></ion-icon> Descargar seleccionados ({{
-              selectedFiles.length
-            }})
+            <ion-icon name="download"></ion-icon> Descargar {{ selectedFiles.length }} seleccionados
           </button>
         </div>
       </div>
