@@ -176,15 +176,15 @@ import { ref, onMounted, watch, provide, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUsersStore } from '../stores/users'
 import { useAuthStore } from '../stores/auth'
+import { useSuppliersStore } from '../stores/suppliers'
 import axios from 'axios'
-import locations from '../assests/utils/locations.json'
 import NewUserWindows from '../components/NewUserWindows.vue'
 
 const router = useRouter()
 const alerts = inject('alerts')
 
 const authStore = useAuthStore()
-
+const suppliersStore = useSuppliersStore()
 const usersStore = useUsersStore()
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -209,9 +209,7 @@ const isLoading = inject('isLoading')
 
 const inactiveSearch = ref(false)
 
-const locationsList = [...locations.locations].sort((a, b) =>
-  a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }),
-)
+const locationsList = ref([])
 
 provide('showNewUserWindow', showNewUserWindow)
 
@@ -329,9 +327,22 @@ const handleResetPassword = (user_name) => {
   showResetPasswordWindow.value = true
 }
 
-onMounted(() => {
+const loadLocations = async () => {
+  try {
+    const locations = await suppliersStore.getLocations()
+    locationsList.value = [...locations].sort((a, b) =>
+      a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+    )
+  } catch (error) {
+    console.error('Error loading locations:', error)
+    alerts.error('Error al cargar las ubicaciones', 5000)
+  }
+}
+
+onMounted(async () => {
+  await loadLocations()
   fetchUsers()
-  if (!authStore.userData.admin){
+  if (!authStore.userData.admin) {
     alerts.error('No tienes permiso para acceder a esta página', 5000)
     router.push('/search')
   }
