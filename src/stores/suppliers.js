@@ -27,7 +27,27 @@ export const useSuppliersStore = defineStore('suppliers', () => {
     }
   }
 
+  const getLocations = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/locations`, {
+        headers: {
+          Authorization: `Bearer ${authStore.userData.token}`,
+          'Content-Type': 'application/json',
+        },
+      })
+      
+      console.log('Ubicaciones obtenidas:', response.data.locations)
+      
+      // Return the response data directly, let the component handle the formatting
+      return response.data.locations
+    } catch (error) {
+      console.error('Error al obtener ubicaciones:', error.response?.data || error.message)
+      throw error
+    }
+  }
+
   return {
     getSuppliers,
+    getLocations,
   }
 })

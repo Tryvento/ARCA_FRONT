@@ -219,7 +219,6 @@ import { useAuthStore } from '../stores/auth'
 import { useFacturesStore } from '../stores/factures'
 import { useLogsStore } from '../stores/logs'
 import { useSuppliersStore } from '../stores/suppliers'
-import locations from '../assests/utils/locations.json'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import JSZip from 'jszip'
@@ -235,9 +234,7 @@ const isLoading = inject('isLoading')
 const showUploadFilesWindow = ref(false)
 provide('showUploadFilesWindow', showUploadFilesWindow)
 
-const locationsList = [...locations.locations].sort((a, b) =>
-  a.code.localeCompare(b.code, 'es', { numeric: true })
-)
+const locationsList = ref([])
 
 const getLocationFromInvoice = (invoiceNumber) => {
   if (!invoiceNumber) return 'Otro'
@@ -675,17 +672,32 @@ const nextPage = () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   selectedLocation.value = authStore.userData.location_code
-  searchFactures()
   
-  // Pre-fetch supplier names when component mounts
-  if (typeSearch.value === 'PROVEEDORES') {
-    filesData.value.forEach(facture => {
-      if (facture.nit) {
-        getSupplierName(facture.nit)
-      }
-    })
+  try {
+    isLoading.value = true
+    // Load locations first
+    const locations = await suppliersStore.getLocations()
+    locationsList.value = locations
+    console.log("locationsList", locationsList.value)
+    
+    // Then search factures
+    await searchFactures()
+    
+    // Pre-fetch supplier names when component mounts
+    if (typeSearch.value === 'PROVEEDORES') {
+      filesData.value.forEach(facture => {
+        if (facture.nit) {
+          getSupplierName(facture.nit)
+        }
+      })
+    }
+  } catch (error) {
+    console.error('Error initializing component:', error)
+    alerts.error('Error al cargar las ubicaciones')
+  } finally {
+    isLoading.value = false
   }
 })
 

@@ -32,17 +32,31 @@
 </template>
 
 <script setup>
-import { ref, inject } from 'vue'
+import { ref, inject, onMounted } from 'vue'
 import { useUsersStore } from '../stores/users'
-
-import locations from '../assests/utils/locations.json'
+import { useSuppliersStore } from '../stores/suppliers'
 
 const alerts = inject('alerts')
+const suppliersStore = useSuppliersStore()
+const isLoading = inject('isLoading')
 
-const locationsList = [...locations.locations].sort((a, b) =>
-  a.code.localeCompare(b.code, 'es', { numeric: true })
-)
-console.log(locationsList)
+const locationsList = ref([])
+
+// Load locations when component mounts
+onMounted(async () => {
+  try {
+    isLoading.value = true
+    const locations = await suppliersStore.getLocations()
+    locationsList.value = [...locations].sort((a, b) =>
+      a.code.localeCompare(b.code, 'es', { numeric: true })
+    )
+  } catch (error) {
+    console.error('Error loading locations:', error)
+    alerts.error('Error al cargar las ubicaciones')
+  } finally {
+    isLoading.value = false
+  }
+})
 
 const usersStore = useUsersStore()
 
@@ -53,7 +67,6 @@ const admin = ref(false)
 
 const showNewUserWindow = inject('showNewUserWindow')
 
-const isLoading = inject('isLoading')
 
 const createUser = async () => {
   isLoading.value = true
