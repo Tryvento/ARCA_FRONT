@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
     <div class="search-header">
-      <h1><img src="../assests/images/arca_inv_logo.png" alt="" />BÚSQUEDA DE FACTURAS</h1>
+      <h1><img src="../assests/images/arca_inv_logo.png" alt="" />BÚSQUEDA DE COMPROBANTES</h1>
       <span class="header-user">
         <h2>
           {{
@@ -146,7 +146,7 @@
         <div class="header-actions">
           <transition name="fade-slide" mode="out-in">
             <span class="results-count" v-if="selectedFiles.length === 0" key="count"
-              >{{ totalFiles }} registros encontrados</span
+              >{{ totalFiles }} comprobantes encontrados</span
             >
             <button v-else key="download" @click="downloadSelected" class="download-selected-btn">
               <ion-icon name="download"></ion-icon> Descargar
@@ -164,7 +164,7 @@
               <th>Fecha</th>
               <th>NIT</th>
               <th v-if="typeSearch === 'PROVEEDORES'">Proveedor</th>
-              <th>N° Factura</th>
+              <th>N° COMPROBANTE</th>
               <th v-if="selectedLocation === 'all'">Ubicación</th>
               <th>Acciones</th>
             </tr>
@@ -429,14 +429,14 @@ const searchFactures = async (isPagination = false) => {
         filesData.value = []
         totalPages.value = 1
         totalFiles.value = 0
-        alerts.error(`No se encontraron registros`, 5000)
+        alerts.error(`No se encontraron comprobantes`, 5000)
       }
     } catch (error) {
       console.error('Error en la búsqueda:', error)
       filesData.value = []
       totalPages.value = 1
       totalFiles.value = 0
-      alerts.error(`No se encontraron registros`, 5000)
+      alerts.error(`No se encontraron comprobantes`, 5000)
     } finally {
       setTimeout(() => {
         isLoading.value = false
@@ -549,7 +549,7 @@ const confirmDownload = async () => {
       nit: facture.nit,
     }
     useLogsStore().createLog(authStore.userData.user_name, [logData])
-    alerts.info(`Registro ${facture.bill_number} descargado`, 5000)
+    alerts.info(`Comprobante ${facture.bill_number} descargado`, 5000)
   } else if (pendingDownload.value.type === 'multiple') {
     const { fileNames } = pendingDownload.value
     await downloadMultipleFiles(fileNames)
@@ -657,7 +657,7 @@ const downloadMultipleFiles = async (fileNames) => {
     if (logsData.length > 0) {
       useLogsStore().createLog(authStore.userData.user_name, logsData)
     }
-    alerts.info(`Registros descargados`, 5000)
+    alerts.info(`Comprobantes descargados`, 5000)
 
     // Clean up
     setTimeout(() => window.URL.revokeObjectURL(url), 100)

@@ -71,7 +71,7 @@
               <th>ID</th>
               <th>Usuario</th>
               <th>Fecha</th>
-              <th>Registros</th>
+              <th>Comprobantes</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -80,7 +80,7 @@
               <td>{{ log.id }}</td>
               <td>{{ log.user_name }}</td>
               <td>{{ formatDate(log.download_date) }}</td>
-              <td>{{ log.downloaded_records.length }} registros</td>
+              <td>{{ log.downloaded_records.length }} comprobantes</td>
               <td class="actions-cell">
                 <button class="view-btn" @click="showLogDetails(log)">
                   <ion-icon name="eye"></ion-icon> Ver
@@ -124,7 +124,7 @@
           </div>
 
           <h3 class="files-title">
-            Registros descargados ({{ selectedLog.downloaded_records.length }})
+            Comprobantes descargados ({{ selectedLog.downloaded_records.length }})
           </h3>
           <div class="files-list">
             <div
