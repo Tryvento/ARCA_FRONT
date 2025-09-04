@@ -65,7 +65,7 @@ export const useAuthStore = defineStore('userAuth', () => {
       console.error('Error al iniciar sesión:', error)
       return { 
         success: false, 
-        message: error.response?.data?.detail || 'Error de conexión con el servidor' 
+        message: error.response?.data?.detail || 'Error' 
       }
     }
   }
@@ -108,7 +108,7 @@ export const useAuthStore = defineStore('userAuth', () => {
         return { success: false, message: 'Sesion Expirada' }
       }
       console.log("Error al verificar token: ", error)
-      return { success: false, message: error.response?.data?.detail || 'Error de conexión con el servidor' }
+      return { success: false, message: error.response?.data?.detail || 'Error' }
     }
   }
 
