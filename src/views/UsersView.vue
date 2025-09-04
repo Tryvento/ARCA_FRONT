@@ -233,7 +233,9 @@ const fetchUsers = async () => {
     console.error('Error al obtener usuarios:', error)
     alerts.error('Error al obtener usuarios', 5000)
   } finally {
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
   }
 }
 
@@ -259,7 +261,9 @@ const searchUsers = async (complete_name, user_name, location_code, is_active) =
     console.error('Error al buscar usuarios:', error)
     alerts.error('Error al buscar usuarios', 5000)
   } finally {
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
   }
 }
 
@@ -277,7 +281,9 @@ const desactivateUser = async () => {
   isLoading.value = true
   await usersStore.stateUser(userToDesactivate.value, false)
   showDesactivateUserWindow.value = false
-  isLoading.value = false
+  setTimeout(() => {
+    isLoading.value = false
+  }, 1000)
   userToDesactivate.value = ''
   fetchUsers()
   alerts.warning('Usuario desactivado', 5000)
@@ -288,7 +294,9 @@ const activateUser = async () => {
   try {
     await usersStore.stateUser(userToActivate.value, true)
     showActivateUserWindow.value = false
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
     userToActivate.value = ''
     fetchUsers()
     inactiveSearch.value = false
@@ -315,7 +323,9 @@ const switchPermission = async () => {
     alerts.error('Error al cambiar permiso', 5000)
   } finally {
     showSwitchPermissionWindow.value = false
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
     userToSwitchPermission.value = ''
     permissionUserToSwitch.value = false
     fetchUsers()
@@ -331,7 +341,7 @@ const loadLocations = async () => {
   try {
     const locations = await suppliersStore.getLocations()
     locationsList.value = [...locations].sort((a, b) =>
-      a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+      a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }),
     )
   } catch (error) {
     console.error('Error loading locations:', error)
@@ -376,7 +386,9 @@ const restorePassword = async (userName) => {
     console.error('Error al restablecer contraseña:', error.response.data.detail)
     alerts.error('Error al restablecer contraseña', 5000)
   } finally {
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div id="login-container">
     <div id="login-header">
-      <img src="../assests/images/arca_logo.png" alt="">
+      <img src="../assests/images/arca_logo.png" alt="" />
     </div>
 
     <form id="login-form" @submit.prevent="handleLogin">
@@ -53,20 +53,15 @@
           <ion-icon name="lock-closed"></ion-icon>
           <input :type="showRestorePassword ? 'text' : 'password'" id="pwd_r2" />
         </label>
-        <input
-          style="display: none;"
-          type="checkbox"
-          id="pwd_r_s"
-          v-model="showRestorePassword"
-        />
+        <input style="display: none" type="checkbox" id="pwd_r_s" v-model="showRestorePassword" />
         <label for="pwd_r_s" class="toggle-r-password">
-            <span>{{ showRestorePassword ? 'Ocultar ' : 'Mostrar ' }} contraseña</span>
-            <ion-icon :name="showRestorePassword ? 'eye-off' : 'eye'"></ion-icon>
+          <span>{{ showRestorePassword ? 'Ocultar ' : 'Mostrar ' }} contraseña</span>
+          <ion-icon :name="showRestorePassword ? 'eye-off' : 'eye'"></ion-icon>
         </label>
         <p>¿Estás seguro de que deseas restablecer la contraseña?</p>
         <div class="restore-modal-buttons">
-            <button @click="showRestoreModal = false">Cancelar</button>
-            <button @click="updatePassword">Restablecer</button>
+          <button @click="showRestoreModal = false">Cancelar</button>
+          <button @click="updatePassword">Restablecer</button>
         </div>
       </div>
     </div>
@@ -129,7 +124,9 @@ const handleLogin = async () => {
     console.error('Login error:', error)
     showMessage('Error inesperado al intentar iniciar sesión', 'error')
   } finally {
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
   }
 }
 
@@ -198,16 +195,16 @@ onMounted(() => {
 }
 #login-header img {
   width: 250px;
-  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.336)); 
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.336));
   margin-bottom: 20px;
-  scale: 1.3; 
+  scale: 1.3;
 }
 #login-header p {
-    color: white;
-    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.61);
-    text-transform: uppercase;
-    font-size: 1rem;
-    letter-spacing: 1px;
+  color: white;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.61);
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 1px;
 }
 #login-form {
   display: flex;
@@ -229,11 +226,11 @@ onMounted(() => {
   color: white;
 }
 #login-form p {
-    color: white;
-    font-size: 1rem;
-    text-align: center;
-    width: 70%;
-    font-size: .9rem
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  width: 70%;
+  font-size: 0.9rem;
 }
 .input-label {
   display: flex;
@@ -266,8 +263,8 @@ onMounted(() => {
   scale: 1.01;
   border-bottom: 5px solid var(--fede-color-hover);
 }
-.input-label input::placeholder{
-    color: white;
+.input-label input::placeholder {
+  color: white;
 }
 
 .login-button {
@@ -318,7 +315,7 @@ button[disabled] {
   justify-content: center;
   align-items: center;
   gap: 10px;
-  font-size: .7rem;
+  font-size: 0.7rem;
   margin-bottom: 40px;
 }
 .fede-color {
@@ -351,68 +348,68 @@ button[disabled] {
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.747);
 }
 
-#restore-modal-content h2{
-    color: var(--fede-color);
-    font-weight: bolder;
-    letter-spacing: 1.5px;
+#restore-modal-content h2 {
+  color: var(--fede-color);
+  font-weight: bolder;
+  letter-spacing: 1.5px;
 }
 
-#restore-modal-content .input-label{
+#restore-modal-content .input-label {
   color: black;
   margin-bottom: 10px;
 }
-#restore-modal-content .input-label ion-icon{
-    color: black;
+#restore-modal-content .input-label ion-icon {
+  color: black;
 }
-#restore-modal-content .input-label input{
-    color: black;
+#restore-modal-content .input-label input {
+  color: black;
 }
-.toggle-r-password{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-    border-bottom: 2px solid var(--fede-color);
-    padding-bottom:5px;
-    padding-left:10px;
-    padding-right:10px;
+.toggle-r-password {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  border-bottom: 2px solid var(--fede-color);
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
-.toggle-r-password ion-icon{
-    color: var(--fede-color);
+.toggle-r-password ion-icon {
+  color: var(--fede-color);
 }
 
-.restore-modal-buttons{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-    padding-bottom:5px;
-    padding-left:10px;
-    padding-right:10px;
-    flex-wrap: wrap;
-    width: 80%;
+.restore-modal-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  flex-wrap: wrap;
+  width: 80%;
 }
-.restore-modal-buttons button{
-    all: unset;
-    cursor: pointer;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: var(--fede-color);
-    color: white;
-    transition: all 0.3s ease;
+.restore-modal-buttons button {
+  all: unset;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: var(--fede-color);
+  color: white;
+  transition: all 0.3s ease;
 }
-.restore-modal-buttons button:hover{
-    background-color: var(--fede-color-hover);
-    scale: 1.1;
+.restore-modal-buttons button:hover {
+  background-color: var(--fede-color-hover);
+  scale: 1.1;
 }
-.restore-modal-buttons button:active{
-    transform: translateY(-2px);
+.restore-modal-buttons button:active {
+  transform: translateY(-2px);
 }
 
 .fade-enter-active,
@@ -425,9 +422,9 @@ button[disabled] {
   opacity: 0;
 }
 
-.secret{
-    color: var(--fede-color);
-    font-weight: bolder;
-    opacity: .09;
+.secret {
+  color: var(--fede-color);
+  font-weight: bolder;
+  opacity: 0.09;
 }
 </style>

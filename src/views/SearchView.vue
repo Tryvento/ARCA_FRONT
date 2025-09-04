@@ -1,11 +1,12 @@
 <template>
   <div class="search-container">
     <div class="search-header">
-      <h1><img src="../assests/images/arca_inv_logo.png" alt="">BÚSQUEDA DE FACTURAS</h1>
+      <h1><img src="../assests/images/arca_inv_logo.png" alt="" />BÚSQUEDA DE FACTURAS</h1>
       <span class="header-user">
         <h2>
           {{
-            locationsList.find((location) => location.code === authStore.userData.location_code)?.name || 'Ubicación desconocida'
+            locationsList.find((location) => location.code === authStore.userData.location_code)
+              ?.name || 'Ubicación desconocida'
           }}
         </h2>
         <h2>{{ authStore.userData.complete_name }}</h2>
@@ -17,12 +18,21 @@
           class="btn-secondary"
           title="Usuarios"
         >
-          <ion-icon name="people"></ion-icon> 
+          <ion-icon name="people"></ion-icon>
         </button>
-        <button v-if="authStore.userData.admin" @click="showUploadFilesWindow = true" class="btn-upload" title="Subir archivos">
+        <button
+          v-if="authStore.userData.admin"
+          @click="showUploadFilesWindow = true"
+          class="btn-upload"
+          title="Subir archivos"
+        >
           <ion-icon name="cloud-upload"></ion-icon>
         </button>
-        <button @click="(authStore.logout(), router.push('/'))" class="btn-logout" title="Cerrar sesión">
+        <button
+          @click="(authStore.logout(), router.push('/'))"
+          class="btn-logout"
+          title="Cerrar sesión"
+        >
           <ion-icon name="log-out"></ion-icon>
         </button>
       </div>
@@ -135,14 +145,12 @@
         <h2>Resultados de la búsqueda</h2>
         <div class="header-actions">
           <transition name="fade-slide" mode="out-in">
-            <span class="results-count" v-if="selectedFiles.length === 0" key="count">{{ totalFiles }} registros encontrados</span>
-            <button
-              v-else
-              key="download"
-              @click="downloadSelected"
-              class="download-selected-btn"
+            <span class="results-count" v-if="selectedFiles.length === 0" key="count"
+              >{{ totalFiles }} registros encontrados</span
             >
-              <ion-icon name="download"></ion-icon> Descargar {{ selectedFiles.length }} seleccionados
+            <button v-else key="download" @click="downloadSelected" class="download-selected-btn">
+              <ion-icon name="download"></ion-icon> Descargar
+              {{ selectedFiles.length }} seleccionados
             </button>
           </transition>
         </div>
@@ -166,7 +174,11 @@
               <td><input type="checkbox" v-model="selectedFiles" :value="facture.file_name" /></td>
               <td>{{ formatDate(facture.date) }}</td>
               <td>{{ facture.nit || 'N/A' }}</td>
-              <td v-if="typeSearch === 'PROVEEDORES' && facture.nit">{{ facture.nit === '860010522' ? 'FEDEARROZ' : (supplierNames[facture.nit] || 'N/A') }}</td>
+              <td v-if="typeSearch === 'PROVEEDORES' && facture.nit">
+                {{
+                  facture.nit === '860010522' ? 'FEDEARROZ' : supplierNames[facture.nit] || 'N/A'
+                }}
+              </td>
               <td>{{ facture.bill_number || 'N/A' }}</td>
               <td v-if="selectedLocation === 'all'">
                 {{ getLocationFromInvoice(facture.bill_number) }}
@@ -194,7 +206,7 @@
   <transition name="fade">
     <UploadFiles v-if="showUploadFilesWindow" @close="showUploadFilesWindow = false" />
   </transition>
-  
+
   <transition name="fade">
     <div class="modal" v-if="showDownloadConfirm">
       <div class="modal-content">
@@ -254,19 +266,19 @@ const supplierNames = ref({})
 
 const getSupplierName = async (nit) => {
   if (!nit) return 'N/A'
-  
+
   // Return cached name if available
   if (supplierNames.value[nit]) {
     return supplierNames.value[nit]
   }
-  
+
   try {
     // Set loading state
     supplierNames.value = { ...supplierNames.value, [nit]: 'Cargando...' }
-    
+
     const supplierData = await suppliersStore.getSuppliers(nit)
     let supplierName = 'N/A'
-    
+
     if (supplierData) {
       // Handle both array and single object responses
       const supplier = Array.isArray(supplierData) ? supplierData[0] : supplierData
@@ -274,11 +286,10 @@ const getSupplierName = async (nit) => {
         supplierName = supplier.complete_name || supplier.name || 'N/A'
       }
     }
-    
+
     // Update cache
     supplierNames.value = { ...supplierNames.value, [nit]: supplierName }
     return supplierName
-    
   } catch (error) {
     console.error('Error fetching supplier:', error)
     supplierNames.value = { ...supplierNames.value, [nit]: 'N/A' }
@@ -344,7 +355,7 @@ const searchFactures = async (isPagination = false) => {
   if (!isPagination) {
     currentPage.value = 1
   }
-  
+
   // Ajustar la fecha de inicio para que incluya el día completo
   let adjustedStartDate = start_date.value
   if (start_date.value) {
@@ -369,7 +380,9 @@ const searchFactures = async (isPagination = false) => {
     } catch (error) {
       console.error(error)
     } finally {
-      isLoading.value = false
+      setTimeout(() => {
+        isLoading.value = false
+      }, 1000)
     }
   } else if (typeFile.value === 'SA') {
     isLoading.value = true
@@ -387,7 +400,9 @@ const searchFactures = async (isPagination = false) => {
     } catch (error) {
       console.error(error)
     } finally {
-      isLoading.value = false
+      setTimeout(() => {
+        isLoading.value = false
+      }, 1000)
     }
   } else if (
     (typeFile.value === 'NC' || typeFile.value === 'ND') &&
@@ -405,7 +420,7 @@ const searchFactures = async (isPagination = false) => {
       )
 
       console.log(response)
-      
+
       if (response && response.data) {
         filesData.value = response.data || []
         totalPages.value = response.total_pages || 1
@@ -423,7 +438,9 @@ const searchFactures = async (isPagination = false) => {
       totalFiles.value = 0
       alerts.error(`No se encontraron registros`, 5000)
     } finally {
-      isLoading.value = false
+      setTimeout(() => {
+        isLoading.value = false
+      }, 1000)
     }
   } else if (typeFile.value === 'FAC') {
     isLoading.value = true
@@ -447,7 +464,9 @@ const searchFactures = async (isPagination = false) => {
     } catch (error) {
       console.error(error)
     } finally {
-      isLoading.value = false
+      setTimeout(() => {
+        isLoading.value = false
+      }, 1000)
     }
   } else if (typeFile.value === 'NC' || typeFile.value === 'ND') {
     isLoading.value = true
@@ -470,10 +489,14 @@ const searchFactures = async (isPagination = false) => {
     } catch (error) {
       console.error(error)
     } finally {
-      isLoading.value = false
+      setTimeout(() => {
+        isLoading.value = false
+      }, 1000)
     }
   }
-  isLoading.value = false
+  setTimeout(() => {
+    isLoading.value = false
+  }, 1000)
 }
 
 const formatDate = (dateString) => {
@@ -489,10 +512,10 @@ const downloadFile = async (facture) => {
 
 const confirmDownload = async () => {
   if (!pendingDownload.value) return
-  
+
   isLoading.value = true
   showDownloadConfirm.value = false
-  
+
   if (pendingDownload.value.type === 'single') {
     const { facture } = pendingDownload.value
     let path = ''
@@ -523,7 +546,7 @@ const confirmDownload = async () => {
       bill_number: facture.bill_number,
       date: facture.date,
       file_name: facture.file_name,
-      nit: facture.nit
+      nit: facture.nit,
     }
     useLogsStore().createLog(authStore.userData.user_name, [logData])
     alerts.info(`Registro ${facture.bill_number} descargado`, 5000)
@@ -531,9 +554,11 @@ const confirmDownload = async () => {
     const { fileNames } = pendingDownload.value
     await downloadMultipleFiles(fileNames)
   }
-  
+
   pendingDownload.value = null
-  isLoading.value = false
+  setTimeout(() => {
+    isLoading.value = false
+  }, 1000)
 }
 
 const cancelDownload = () => {
@@ -544,10 +569,10 @@ const cancelDownload = () => {
 const downloadMultipleFiles = async (fileNames) => {
   isLoading.value = true
   const logsData = []
-  
+
   try {
     const zip = new JSZip()
-    
+
     // First, collect all file information and download files
     for (const fileName of fileNames) {
       let path = ''
@@ -556,7 +581,7 @@ const downloadMultipleFiles = async (fileNames) => {
       } else if (typeSearch.value === 'PROVEEDORES') {
         path = 'suppliers'
       }
-      
+
       switch (typeFile.value) {
         case 'FAC':
           path += '/factura-ubl'
@@ -575,15 +600,15 @@ const downloadMultipleFiles = async (fileNames) => {
       }
 
       const files_paths = await facturesStore.getFilesPath(path, fileName)
-      
+
       // Add file info to logs
       let fileInfo = {
         file_name: fileName,
         nit: '',
         bill_number: '',
-        date: ''
+        date: '',
       }
-      
+
       // Parse filename based on file type
       if (typeFile.value === 'SA') {
         // Format for SOPORTE-ADQUISICION
@@ -592,18 +617,22 @@ const downloadMultipleFiles = async (fileNames) => {
           ...fileInfo,
           nit: parts[0],
           bill_number: parts[1],
-          date: parts[2]
+          date: parts[2],
         }
       } else {
         // Format for FACTURA-UBL, NC-UBL, ND-UBL
-        const prefix = typeFile.value === 'FAC' ? 'FACTURA-UBL(' : 
-                      (typeFile.value === 'NC' ? 'NC-UBL(' : 'ND-UBL(')
+        const prefix =
+          typeFile.value === 'FAC'
+            ? 'FACTURA-UBL('
+            : typeFile.value === 'NC'
+              ? 'NC-UBL('
+              : 'ND-UBL('
         const parts = fileName.replace(prefix, '').replace(').pdf', '').split(';')
         fileInfo = {
           ...fileInfo,
           nit: parts[0],
           bill_number: parts[1],
-          date: parts[2]
+          date: parts[2],
         }
       }
       logsData.push(fileInfo)
@@ -611,7 +640,7 @@ const downloadMultipleFiles = async (fileNames) => {
       const rarBlob = await downloadFileAsBlob(files_paths.pdf, files_paths.xml, fileName)
       zip.file(`${fileName}.rar`, rarBlob)
     }
-    
+
     // Create ZIP file
     const zipBlob = await zip.generateAsync({ type: 'blob' })
 
@@ -619,7 +648,7 @@ const downloadMultipleFiles = async (fileNames) => {
     const url = window.URL.createObjectURL(zipBlob)
     const link = document.createElement('a')
     link.href = url
-    link.setAttribute('download', "DATOS.zip")
+    link.setAttribute('download', 'DATOS.zip')
     document.body.appendChild(link)
     link.click()
     link.remove()
@@ -633,30 +662,31 @@ const downloadMultipleFiles = async (fileNames) => {
     // Clean up
     setTimeout(() => window.URL.revokeObjectURL(url), 100)
   } finally {
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
   }
-
 }
 
 const downloadFileAsBlob = async (pdf, xml, file_name) => {
-  try{
+  try {
     const response = await axios.get(`${import.meta.env.VITE_API_URL}/factures/download`, {
       params: {
         xml_path: xml,
         pdf_path: pdf,
-        file_name: file_name
+        file_name: file_name,
       },
       headers: {
         Authorization: `Bearer ${authStore.userData.token}`,
         'Content-Type': 'application/json',
       },
       responseType: 'blob',
-    });
+    })
 
     if (response.status === 200) {
       return response.data
     }
-  }catch(error){
+  } catch (error) {
     console.error('Error al descargar archivo:', error.response?.data?.detail || error.message)
     return error.response?.data?.detail || error.message
   }
@@ -682,20 +712,20 @@ const nextPage = () => {
 
 onMounted(async () => {
   selectedLocation.value = authStore.userData.location_code
-  
+
   try {
     isLoading.value = true
     // Load locations first
     const locations = await suppliersStore.getLocations()
     locationsList.value = locations
-    console.log("locationsList", locationsList.value)
-    
+    console.log('locationsList', locationsList.value)
+
     // Then search factures
     await searchFactures()
-    
+
     // Pre-fetch supplier names when component mounts
     if (typeSearch.value === 'PROVEEDORES') {
-      filesData.value.forEach(facture => {
+      filesData.value.forEach((facture) => {
         if (facture.nit) {
           getSupplierName(facture.nit)
         }
@@ -705,20 +735,26 @@ onMounted(async () => {
     console.error('Error initializing component:', error)
     alerts.error('Error al cargar las ubicaciones')
   } finally {
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
   }
 })
 
 // Watch for search results to update supplier names
-watch(() => filesData, (newFiles) => {
-  if (typeSearch.value === 'PROVEEDORES') {
-    newFiles.value.forEach(facture => {
-      if (facture.nit && !supplierNames.value[facture.nit]) {
-        getSupplierName(facture.nit)
-      }
-    })
-  }
-}, { deep: true, immediate: true })
+watch(
+  () => filesData,
+  (newFiles) => {
+    if (typeSearch.value === 'PROVEEDORES') {
+      newFiles.value.forEach((facture) => {
+        if (facture.nit && !supplierNames.value[facture.nit]) {
+          getSupplierName(facture.nit)
+        }
+      })
+    }
+  },
+  { deep: true, immediate: true },
+)
 </script>
 
 <style scoped>

@@ -42,7 +42,6 @@ const handlePath = () => {
 }
 
 onMounted(() => {
-  isLoading.value = false
   const userData = JSON.parse(localStorage.getItem('userData'))
   if (userData) {
     useAuthStore().userData.token = userData.token
@@ -136,4 +135,5 @@ watch(
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1rem;
 }
+
 </style>

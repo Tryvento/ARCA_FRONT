@@ -3,28 +3,35 @@
     <div class="upload-files-modal">
       <div class="modal-header">
         <h2>Subir archivos</h2>
-        <button class="close-button" @click="showUploadFilesWindow = false" aria-label="Cerrar ventana">
+        <button
+          class="close-button"
+          @click="showUploadFilesWindow = false"
+          aria-label="Cerrar ventana"
+        >
           <ion-icon name="close"></ion-icon>
         </button>
       </div>
-      
+
       <div class="modal-body">
-        <div class="upload-area" :class="{ 'drag-over': dragOver }" 
-             @dragover.prevent="dragOver = true" 
-             @dragleave="dragOver = false"
-             @drop.prevent="handleDrop">
+        <div
+          class="upload-area"
+          :class="{ 'drag-over': dragOver }"
+          @dragover.prevent="dragOver = true"
+          @dragleave="dragOver = false"
+          @drop.prevent="handleDrop"
+        >
           <ion-icon name="cloud-upload" class="upload-icon"></ion-icon>
           <p>Arrastra tus archivos aquí o</p>
           <label for="file-input" class="browse-button">Seleccionar archivos</label>
           <input id="file-input" type="file" multiple @change="handleFileUpload" />
         </div>
-        
+
         <div class="selected-files" v-if="files.length">
           <div class="files-header" @click="showFilesList = !showFilesList">
             <span>Archivos seleccionados: {{ files.length }}</span>
-            <ion-icon name="chevron-down" :class="{ 'expanded': showFilesList }"></ion-icon>
+            <ion-icon name="chevron-down" :class="{ expanded: showFilesList }"></ion-icon>
           </div>
-          
+
           <transition name="slide">
             <ul class="files-list" v-if="showFilesList">
               <li v-for="(file, index) in files" :key="index" class="file-item">
@@ -35,12 +42,15 @@
             </ul>
           </transition>
         </div>
-        
-        <div class="upload-status" :class="{ 'error': uploadStatus.includes('Error') || uploadStatus.includes('Por favor') }">
+
+        <div
+          class="upload-status"
+          :class="{ error: uploadStatus.includes('Error') || uploadStatus.includes('Por favor') }"
+        >
           {{ uploadStatus }}
         </div>
       </div>
-      
+
       <div class="modal-footer">
         <button class="upload-button" @click="uploadFiles" :disabled="isLoading || !files.length">
           <span v-if="!isLoading">Subir archivos</span>
@@ -71,7 +81,7 @@ export default {
       showUploadFilesWindow: inject('showUploadFilesWindow'),
       showFilesList: false,
       dragOver: false,
-      alerts: inject('alerts')
+      alerts: inject('alerts'),
     }
   },
   methods: {
@@ -118,7 +128,9 @@ export default {
           },
         )
         this.uploadStatus = `Archivos subidos exitosamente: ${response.data.length}`
-        this.isLoading = false
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1000)
         this.alerts.success('Archivos subidos exitosamente', 5000)
         await this.updateSuppliers()
         // Limpiar después de una subida exitosa
@@ -129,9 +141,10 @@ export default {
       } catch (error) {
         this.alerts.error('Error al subir archivos', 5000)
         this.uploadStatus = 'Error al subir archivos'
-        this.isLoading = false
+        setTimeout(() => {
+          this.isLoading = false
+        }, 1000)
       }
-
     },
     async updateSuppliers() {
       try {
@@ -140,13 +153,13 @@ export default {
         console.error('Error al obtener proveedores:', error.response?.data || error.message)
         alerts.error('Error al obtener proveedores', 5000)
       }
-    }
+    },
   },
 }
 </script>
 
 <style scoped>
-*{
+* {
   font-family: var(--font-family);
 }
 .upload-files-container {
@@ -407,13 +420,17 @@ export default {
   animation: dash 1.5s ease-in-out infinite;
 }
 
-.slide-enter-active, .slide-leave-active {
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+.slide-enter-active,
+.slide-leave-active {
+  transition:
+    max-height 0.3s ease,
+    opacity 0.3s ease;
   max-height: 200px;
   opacity: 1;
 }
 
-.slide-enter-from, .slide-leave-to {
+.slide-enter-from,
+.slide-leave-to {
   max-height: 0;
   opacity: 0;
 }
@@ -440,13 +457,23 @@ export default {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleIn {
-  from { transform: scale(0.95); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @media (max-width: 768px) {
@@ -454,15 +481,17 @@ export default {
     width: 95%;
     margin: 10px;
   }
-  
-  .modal-header, .modal-body, .modal-footer {
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
     padding: 15px;
   }
-  
+
   .upload-area {
     padding: 20px 15px;
   }
-  
+
   .upload-icon {
     font-size: 2.5rem;
   }

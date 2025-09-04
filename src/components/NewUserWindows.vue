@@ -48,13 +48,15 @@ onMounted(async () => {
     isLoading.value = true
     const locations = await suppliersStore.getLocations()
     locationsList.value = [...locations].sort((a, b) =>
-      a.code.localeCompare(b.code, 'es', { numeric: true })
+      a.code.localeCompare(b.code, 'es', { numeric: true }),
     )
   } catch (error) {
     console.error('Error loading locations:', error)
     alerts.error('Error al cargar las ubicaciones')
   } finally {
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
   }
 })
 
@@ -67,7 +69,6 @@ const admin = ref(false)
 
 const showNewUserWindow = inject('showNewUserWindow')
 
-
 const createUser = async () => {
   isLoading.value = true
   try {
@@ -78,14 +79,18 @@ const createUser = async () => {
       admin.value,
     )
     showNewUserWindow.value = false
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
     window.location.reload()
     alerts.success('Usuario creado', 5000)
   } catch (error) {
     console.error(error)
     alerts.error('Error al crear usuario', 5000)
   } finally {
-    isLoading.value = false
+    setTimeout(() => {
+      isLoading.value = false
+    }, 1000)
   }
 }
 </script>
