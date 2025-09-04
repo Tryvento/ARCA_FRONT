@@ -344,12 +344,20 @@ const searchFactures = async (isPagination = false) => {
   if (!isPagination) {
     currentPage.value = 1
   }
+  
+  // Ajustar la fecha de inicio para que incluya el día completo
+  let adjustedStartDate = start_date.value
+  if (start_date.value) {
+    const date = new Date(start_date.value)
+    date.setHours(0, 0, 0, 0) // Establecer a medianoche en la zona horaria local
+    adjustedStartDate = date.toISOString().split('T')[0]
+  }
 
   if (selectedLocation.value === 'all' && typeFile.value !== 'SA') {
     isLoading.value = true
     try {
       const response = await facturesStore.getAll(
-        start_date.value,
+        adjustedStartDate,
         end_date.value,
         currentPage.value,
         pageSize.value,
@@ -368,7 +376,7 @@ const searchFactures = async (isPagination = false) => {
 
     try {
       const response = await facturesStore.getSA(
-        start_date.value,
+        adjustedStartDate,
         end_date.value,
         currentPage.value,
         pageSize.value,
@@ -389,7 +397,7 @@ const searchFactures = async (isPagination = false) => {
     try {
       const response = await facturesStore.getNCNDSuppliers(
         typeFile.value,
-        start_date.value,
+        adjustedStartDate,
         end_date.value,
         nit_search.value,
         currentPage.value,
@@ -425,7 +433,7 @@ const searchFactures = async (isPagination = false) => {
     try {
       const response = await facturesStore.getFactures(
         selectedLocation.value,
-        start_date.value,
+        adjustedStartDate,
         end_date.value,
         nit_search.value,
         typeSearch.value,
@@ -450,7 +458,7 @@ const searchFactures = async (isPagination = false) => {
         dateRange.value,
         typeFile.value.toLowerCase(),
         selectedLocation.value,
-        start_date.value,
+        adjustedStartDate,
         end_date.value,
         currentPage.value,
         pageSize.value,
