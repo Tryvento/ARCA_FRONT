@@ -81,6 +81,7 @@ watch(
   <img src="./assests/images/l_fdz_v.png" alt="" class="logo">
   <AlertContainer position="top-left"/>
   <HelpButton/>
+  <span class="secret">DFCM - SERPENTINGK</span>
 </template>
 
 <style scoped>
@@ -122,5 +123,17 @@ watch(
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
     letter-spacing: 2px;
+}
+.secret {
+    position: fixed;
+    right: 0;
+    top: 20px;
+    transform: translateY(-50%);
+    opacity: 0.04;
+    z-index: -1;
+    max-height: 50vh;
+    pointer-events: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1rem;
 }
 </style>
