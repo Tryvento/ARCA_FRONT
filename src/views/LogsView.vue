@@ -7,7 +7,7 @@
         </span>
         <div class="header-buttons">
           <button @click="router.back()" class="btn-secondary">
-            <ion-icon name="arrow-back"></ion-icon> Volver
+            <ion-icon name="arrow-back"></ion-icon>
           </button>
         </div>
       </div>
