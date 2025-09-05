@@ -43,14 +43,26 @@
         <h2>Tipo de búsqueda</h2>
         <div class="filter-group">
           <label for="typeSearch" class="filter-label">
-            <span>Tipo de búsqueda:</span>
+            <div class="label-with-tooltip">
+              <span>Tipo de búsqueda:</span>
+              <div class="tooltip">
+                <ion-icon name="help-circle"></ion-icon>
+                <span class="tooltiptext">Selecciona el tipo de búsqueda: EMISIÓN para facturas emitidas por FEDEARROZ o RECEPCIÓN para facturas de proveedores.</span>
+              </div>
+            </div>
             <select name="" id="typeSearch" v-model="typeSearch" class="filter-select">
               <option value="FEDEARROZ">EMISION - FEDEARROZ</option>
               <option value="PROVEEDORES">RECEPCION - PROVEEDORES</option>
             </select>
           </label>
           <label for="typeFile" class="filter-label">
-            <span>Tipo de archivo:</span>
+            <div class="label-with-tooltip">
+              <span>Tipo de archivo:</span>
+              <div class="tooltip">
+                <ion-icon name="help-circle"></ion-icon>
+                <span class="tooltiptext">Selecciona el tipo de documento que deseas buscar: Facturas, Notas de Crédito, Notas de Débito o, Soportes de Adquisición solo para EMISIÓN.</span>
+              </div>
+            </div>
             <select name="" id="typeFile" v-model="typeFile" class="filter-select">
               <option value="FAC">FACTURAS</option>
               <option value="NC">NOTAS DE CRÉDITO</option>
@@ -63,7 +75,13 @@
             class="filter-label"
             v-if="(typeFile === 'NC' || typeFile === 'ND') && typeSearch === 'FEDEARROZ'"
           >
-            <span>Rango de fechas:</span>
+            <div class="label-with-tooltip">
+              <span>Rango de fechas:</span>
+              <div class="tooltip">
+                <ion-icon name="help-circle"></ion-icon>
+                <span class="tooltiptext">Selecciona el rango de fechas para la búsqueda de notas crédito/débito: 2018-2020 o 2020 en adelante.</span>
+              </div>
+            </div>
             <select name="" id="date-range" v-model="dateRange" class="filter-select">
               <option value="1">2018-2020</option>
               <option value="2">2020 en adelante</option>
@@ -75,11 +93,23 @@
         <h2>Filtros</h2>
         <div class="filter-group">
           <label for="nit-search" class="filter-label" v-if="typeSearch === 'PROVEEDORES'">
-            <span>NIT:</span>
+            <div class="label-with-tooltip">
+              <span>NIT:</span>
+              <div class="tooltip">
+                <ion-icon name="help-circle"></ion-icon>
+                <span class="tooltiptext">Ingresa el NIT del proveedor para filtrar los resultados.</span>
+              </div>
+            </div>
             <input type="text" id="nit-search" v-model="nit_search" class="filter-input" />
           </label>
           <label for="start-date" class="filter-label">
-            <span>Fecha inicio:</span>
+            <div class="label-with-tooltip">
+              <span>Fecha inicio:</span>
+              <div class="tooltip">
+                <ion-icon name="help-circle"></ion-icon>
+                <span class="tooltiptext">Selecciona la fecha de inicio para filtrar. Puedes usar solo esta fecha, solo la fecha final, o ambas.</span>
+              </div>
+            </div>
             <input
               type="date"
               id="start-date"
@@ -90,7 +120,13 @@
             />
           </label>
           <label for="end-date" class="filter-label">
-            <span>Fecha fin:</span>
+            <div class="label-with-tooltip">
+              <span>Fecha fin:</span>
+              <div class="tooltip">
+                <ion-icon name="help-circle"></ion-icon>
+                <span class="tooltiptext">Selecciona la fecha de fin para filtrar. Puedes usar solo esta fecha, solo la fecha de inicio, o ambas.</span>
+              </div>
+            </div>
             <input
               type="date"
               id="end-date"
@@ -109,7 +145,13 @@
             "
             class="filter-label"
           >
-            <span>Ubicación:</span>
+            <div class="label-with-tooltip">
+              <span>Ubicación:</span>
+              <div class="tooltip">
+                <ion-icon name="help-circle"></ion-icon>
+                <span class="tooltiptext">Selecciona la ubicación para filtrar los resultados. Solo disponible para ciertos tipos de búsqueda.</span>
+              </div>
+            </div>
             <select v-model="selectedLocation" class="filter-select">
               <!-- <option value="all" v-if="typeFile !== 'SA'">Todas las ubicaciones</option> -->
               <option v-for="location in locationsList" :key="location.code" :value="location.code">
@@ -119,7 +161,13 @@
             </select>
           </label>
           <label class="filter-label">
-            <span>Mostrar:</span>
+            <div class="label-with-tooltip">
+              <span>Mostrar:</span>
+              <div class="tooltip">
+                <ion-icon name="help-circle"></ion-icon>
+                <span class="tooltiptext">Selecciona cuántos resultados mostrar por página.</span>
+              </div>
+            </div>
             <select v-model="pageSize" @change="searchFactures" class="filter-select">
               <option value="10">10</option>
               <option value="25">25</option>
@@ -786,6 +834,61 @@ watch(
 </script>
 
 <style scoped>
+/* Tooltip container */
+.label-with-tooltip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tooltip {
+  position: relative;
+  display: flex;
+  cursor: help;
+  color: var(--fede-color)
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 200px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+tooltip ion-icon {
+  color: #666;
+  font-size: 14px;
+}
+
 .search-container {
   max-width: 1200px;
   margin: 0 auto;
