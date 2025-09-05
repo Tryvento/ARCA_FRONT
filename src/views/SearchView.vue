@@ -148,6 +148,7 @@
           <div class="results-toggle-container">
             <transition name="fade-swap" mode="out-in">
               <span class="results-count" v-if="selectedFiles.length === 0" key="count">
+                <ion-icon name="search"></ion-icon>
                 {{ totalFiles }} comprobantes encontrados
               </span>
               <button v-else key="download" @click="downloadSelected" class="download-selected-btn">
@@ -1025,20 +1026,21 @@ button {
 
 /* Estilo para el mensaje de conteo */
 .results-count {
-  color: var(--secondary-color, #6b7280);
+  color: var(--secondary-color);
   font-size: 0.95rem;
-  font-weight: 500;
+  border: none;
   padding: 12px 20px;
-  background-color: #f8f9fa;
   border-radius: 6px;
-  border: 1px solid #e9ecef;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
   min-height: 44px;
   box-sizing: border-box;
   min-width: 280px;
-  text-align: center;
+  font-weight: bolder;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Estilo para el botón de descarga */
@@ -1058,7 +1060,7 @@ button {
   min-height: 44px;
   box-sizing: border-box;
   min-width: 280px;
-  font-weight: 500;
+  font-weight: bolder;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
