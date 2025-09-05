@@ -1,7 +1,8 @@
 <template>
   <div id="login-container">
     <div id="login-header">
-      <img src="../assests/images/arca_logo.png" alt="" />
+      <img src="../assests/images/arca_inv_logo.png" alt="" />
+      <h1>ARCA</h1>
     </div>
 
     <form id="login-form" @submit.prevent="handleLogin">
@@ -189,21 +190,19 @@ onMounted(() => {
 }
 #login-header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
 }
 #login-header img {
-  width: 250px;
-  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.336));
+  width: 150px;
   margin-bottom: 20px;
   scale: 1.3;
 }
-#login-header p {
-  color: white;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.61);
+#login-header H1 {
+  color: var(--fede-color);
   text-transform: uppercase;
-  font-size: 1rem;
+  font-size: 5rem;
   letter-spacing: 1px;
 }
 #login-form {
