@@ -43,6 +43,7 @@ const handlePath = () => {
 }
 
 onMounted(() => {
+  isLoading.value = false
   const userData = JSON.parse(localStorage.getItem('userData'))
   if (userData) {
     useAuthStore().userData.token = userData.token
