@@ -235,7 +235,7 @@ const fetchUsers = async () => {
   } finally {
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
   }
 }
 
@@ -263,7 +263,7 @@ const searchUsers = async (complete_name, user_name, location_code, is_active) =
   } finally {
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
   }
 }
 
@@ -283,7 +283,7 @@ const desactivateUser = async () => {
   showDesactivateUserWindow.value = false
   setTimeout(() => {
     isLoading.value = false
-  }, 1000)
+  }, 500)
   userToDesactivate.value = ''
   fetchUsers()
   alerts.warning('Usuario desactivado', 5000)
@@ -296,7 +296,7 @@ const activateUser = async () => {
     showActivateUserWindow.value = false
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
     userToActivate.value = ''
     fetchUsers()
     inactiveSearch.value = false
@@ -325,7 +325,7 @@ const switchPermission = async () => {
     showSwitchPermissionWindow.value = false
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
     userToSwitchPermission.value = ''
     permissionUserToSwitch.value = false
     fetchUsers()
@@ -388,7 +388,7 @@ const restorePassword = async (userName) => {
   } finally {
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
   }
 }
 

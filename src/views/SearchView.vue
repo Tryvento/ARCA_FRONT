@@ -110,7 +110,7 @@
           >
             <span>Ubicación:</span>
             <select v-model="selectedLocation" class="filter-select">
-              <option value="all" v-if="typeFile !== 'SA'">Todas las ubicaciones</option>
+              <!-- <option value="all" v-if="typeFile !== 'SA'">Todas las ubicaciones</option> -->
               <option v-for="location in locationsList" :key="location.code" :value="location.code">
                 ({{ location.code }}) / {{ location.name }}
               </option>
@@ -144,15 +144,17 @@
       <div class="results-header">
         <h2>Resultados de la búsqueda</h2>
         <div class="header-actions">
-          <transition name="fade-slide" mode="out-in">
-            <span class="results-count" v-if="selectedFiles.length === 0" key="count"
-              >{{ totalFiles }} comprobantes encontrados</span
-            >
-            <button v-else key="download" @click="downloadSelected" class="download-selected-btn">
-              <ion-icon name="download"></ion-icon> Descargar
-              {{ selectedFiles.length }} seleccionados
-            </button>
-          </transition>
+          <div class="results-toggle-container">
+            <transition name="fade-swap" mode="out-in">
+              <span class="results-count" v-if="selectedFiles.length === 0" key="count">
+                {{ totalFiles }} comprobantes encontrados
+              </span>
+              <button v-else key="download" @click="downloadSelected" class="download-selected-btn">
+                <ion-icon name="download"></ion-icon> Descargar
+                {{ selectedFiles.length }} seleccionados
+              </button>
+            </transition>
+          </div>
         </div>
       </div>
 
@@ -407,7 +409,7 @@ const searchFactures = async (isPagination = false) => {
     } finally {
       setTimeout(() => {
         isLoading.value = false
-      }, 1000)
+      }, 500)
     }
   } else if (typeFile.value === 'SA') {
     isLoading.value = true
@@ -427,7 +429,7 @@ const searchFactures = async (isPagination = false) => {
     } finally {
       setTimeout(() => {
         isLoading.value = false
-      }, 1000)
+      }, 500)
     }
   } else if (
     (typeFile.value === 'NC' || typeFile.value === 'ND') &&
@@ -465,7 +467,7 @@ const searchFactures = async (isPagination = false) => {
     } finally {
       setTimeout(() => {
         isLoading.value = false
-      }, 1000)
+      }, 500)
     }
   } else if (typeFile.value === 'FAC') {
     isLoading.value = true
@@ -491,7 +493,7 @@ const searchFactures = async (isPagination = false) => {
     } finally {
       setTimeout(() => {
         isLoading.value = false
-      }, 1000)
+      }, 500)
     }
   } else if (typeFile.value === 'NC' || typeFile.value === 'ND') {
     isLoading.value = true
@@ -516,12 +518,12 @@ const searchFactures = async (isPagination = false) => {
     } finally {
       setTimeout(() => {
         isLoading.value = false
-      }, 1000)
+      }, 500)
     }
   }
   setTimeout(() => {
     isLoading.value = false
-  }, 1000)
+  }, 500)
 }
 
 const formatDate = (dateString) => {
@@ -583,7 +585,7 @@ const confirmDownload = async () => {
   pendingDownload.value = null
   setTimeout(() => {
     isLoading.value = false
-  }, 1000)
+  }, 500)
 }
 
 const cancelDownload = () => {
@@ -689,7 +691,7 @@ const downloadMultipleFiles = async (fileNames) => {
   } finally {
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
   }
 }
 
@@ -742,8 +744,7 @@ onMounted(async () => {
     isLoading.value = true
     // Load locations first
     const locations = await suppliersStore.getLocations()
-    locationsList.value = locations
-    console.log('locationsList', locationsList.value)
+    locationsList.value = locations.sort((a, b) => a.code.localeCompare(b.code))
 
     // Then search factures
     await searchFactures()
@@ -762,7 +763,7 @@ onMounted(async () => {
   } finally {
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
   }
 })
 
@@ -927,19 +928,21 @@ h2 {
   opacity: 0;
 }
 
-.fade-slide-enter-active,
-.fade-slide-leave-active {
+.fade-swap-enter-active,
+.fade-swap-leave-active {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.fade-slide-enter-from {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.fade-slide-leave-to {
+.fade-swap-enter-from,
+.fade-swap-leave-to {
   opacity: 0;
   transform: translateY(10px);
+}
+
+.fade-swap-enter-to,
+.fade-swap-leave-from {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .filter-input:focus,
@@ -1011,32 +1014,63 @@ button {
   flex-wrap: wrap;
 }
 
-.download-selected-btn {
-  background-color: var(--positive-color, #4caf50);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
+/* Contenedor para mantener dimensiones consistentes */
+.results-toggle-container {
+  min-height: 44px;
   display: flex;
   align-items: center;
-  gap: 5px;
-  transition: background-color 0.3s;
-  animation: fadeIn 0.5s;
+  justify-content: center;
+  min-width: 280px;
+  transition: all 0.3s ease;
 }
 
-.download-selected-btn:hover {
-  background-color: var(--positive-color-hover, #45a049);
-}
-
-.download-selected-btn:active {
-  background-color: var(--positive-color-active, #3d8b40);
-}
-
+/* Estilo para el mensaje de conteo */
 .results-count {
   color: var(--secondary-color, #6b7280);
   font-size: 0.95rem;
   font-weight: 500;
+  padding: 12px 20px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  box-sizing: border-box;
+  min-width: 280px;
+  text-align: center;
+}
+
+/* Estilo para el botón de descarga */
+.download-selected-btn {
+  background-color: var(--fede-color);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  min-height: 44px;
+  box-sizing: border-box;
+  min-width: 280px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.download-selected-btn:hover {
+  background-color: var(--fede-color-hover, #1e3d73);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.download-selected-btn:active {
+  background-color: var(--fede-color-active, #1a2e61);
+  transform: translateY(0);
 }
 
 .table-container {
@@ -1329,6 +1363,16 @@ input[type='checkbox'] {
     flex-direction: column;
     gap: 10px;
     text-align: center;
+  }
+
+  .results-toggle-container {
+    min-width: 100%;
+  }
+  
+  .results-count,
+  .download-selected-btn {
+    min-width: 100%;
+    width: 100%;
   }
 
   .filter-input,

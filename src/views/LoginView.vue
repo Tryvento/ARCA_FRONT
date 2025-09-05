@@ -127,7 +127,7 @@ const handleLogin = async () => {
   } finally {
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
   }
 }
 

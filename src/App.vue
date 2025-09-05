@@ -73,9 +73,11 @@ watch(
 </script>
 
 <template>
-  <div v-if="isLoading" class="loading">
-    <p>Cargando...</p>
-  </div>
+  <transition name="fade" mode="out-in">
+    <div v-if="isLoading" class="loading">
+      <p class="loading-text">Cargando...</p>
+    </div>
+  </transition>
   <router-view></router-view>
   <img src="./assests/images/l_fdz_v.png" alt="" class="logo">
   <AlertContainer position="top-left"/>
@@ -112,7 +114,7 @@ watch(
     top: 0;
     left: 0;
     z-index: 9999;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.795);
 }
 
 .loading p {
@@ -134,6 +136,16 @@ watch(
     pointer-events: none;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1rem;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.7s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
 
 </style>

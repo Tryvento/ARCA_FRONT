@@ -106,7 +106,7 @@
     <div v-if="selectedLog" class="modal-overlay" @click.self="selectedLog = null">
       <div class="modal-content">
         <div class="modal-header">
-          <h2>Detalles de la Descarga</h2>
+          <h1><img src="../assests/images/arca_inv_logo.png" alt="" />DETALLE DE DESCARGA</h1>
           <button @click="selectedLog = null" class="close-button">&times;</button>
         </div>
         <div class="modal-body">
@@ -133,7 +133,7 @@
               class="file-item"
             >
               <div class="file-row">
-                <span class="file-label">Factura:</span>
+                <span class="file-label">Comprobante:</span>
                 <span class="file-value">{{ file.bill_number || 'N/A' }}</span>
               </div>
               <div class="file-row">
@@ -248,7 +248,7 @@ const searchLogs = async () => {
   } finally {
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
   }
   currentPage.value = 1
 }
@@ -565,10 +565,9 @@ button {
   border-bottom: 1px solid #e9ecef;
 }
 
-.modal-header h2 {
+.modal-header h1 {
   margin: 0;
   font-size: 1.5rem;
-  color: var(--fede-color, #2c5aa0);
 }
 
 .close-button {
@@ -650,7 +649,7 @@ button {
 .file-label {
   font-weight: 500;
   color: #495057;
-  min-width: 80px;
+  min-width: 100px;
 }
 
 .file-value {

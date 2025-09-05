@@ -56,7 +56,7 @@ onMounted(async () => {
   } finally {
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
   }
 })
 
@@ -81,7 +81,7 @@ const createUser = async () => {
     showNewUserWindow.value = false
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
     window.location.reload()
     alerts.success('Usuario creado', 5000)
   } catch (error) {
@@ -90,7 +90,7 @@ const createUser = async () => {
   } finally {
     setTimeout(() => {
       isLoading.value = false
-    }, 1000)
+    }, 500)
   }
 }
 </script>

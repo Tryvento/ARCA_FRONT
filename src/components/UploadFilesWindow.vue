@@ -130,7 +130,7 @@ export default {
         this.uploadStatus = `Archivos subidos exitosamente: ${response.data.length}`
         setTimeout(() => {
           this.isLoading = false
-        }, 1000)
+        }, 500)
         this.alerts.success('Archivos subidos exitosamente', 5000)
         await this.updateSuppliers()
         // Limpiar después de una subida exitosa
@@ -143,7 +143,7 @@ export default {
         this.uploadStatus = 'Error al subir archivos'
         setTimeout(() => {
           this.isLoading = false
-        }, 1000)
+        }, 500)
       }
     },
     async updateSuppliers() {
