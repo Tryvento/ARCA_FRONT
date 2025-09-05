@@ -936,13 +936,11 @@ h2 {
 .fade-swap-enter-from,
 .fade-swap-leave-to {
   opacity: 0;
-  transform: translateY(10px);
 }
 
 .fade-swap-enter-to,
 .fade-swap-leave-from {
   opacity: 1;
-  transform: translateY(0);
 }
 
 .filter-input:focus,
@@ -1046,6 +1044,7 @@ button {
 .download-selected-btn {
   background-color: var(--fede-color);
   color: white;
+  font-size: 0.95rem;
   border: none;
   padding: 12px 20px;
   border-radius: 6px;
