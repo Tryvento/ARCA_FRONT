@@ -162,7 +162,12 @@
             <tr>
               <th>
                 <label for="selectAll" class="checkbox-container">
-                  <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" id="selectAll" />
+                  <input
+                    type="checkbox"
+                    v-model="selectAll"
+                    @change="toggleSelectAll"
+                    id="selectAll"
+                  />
                   <span class="checkmark"></span>
                 </label>
               </th>
@@ -175,10 +180,20 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="facture in filesData" :key="facture.file_name" class="facture-row">
+            <tr
+              v-for="facture in filesData"
+              :key="facture.file_name"
+              class="facture-row"
+              :class="{ selected: selectedFiles.includes(facture.file_name) }"
+            >
               <td>
                 <label :for="`select-${facture.file_name}`" class="checkbox-container">
-                  <input type="checkbox" v-model="selectedFiles" :value="facture.file_name" :id="`select-${facture.file_name}`" />
+                  <input
+                    type="checkbox"
+                    v-model="selectedFiles"
+                    :value="facture.file_name"
+                    :id="`select-${facture.file_name}`"
+                  />
                   <span class="checkmark"></span>
                 </label>
               </td>
@@ -1066,8 +1081,28 @@ input[type='checkbox'] {
   letter-spacing: 0.5px;
 }
 
+/* Hover state */
 .facture-row:hover {
-  background-color: var(--background-color-hover, #f8f9fa);
+  background-color: var(--background-color-hover, #f5f5f5);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Selected row state */
+.facture-row.selected {
+  background-color: rgba(44, 90, 160, 0.08) !important;
+  position: relative;
+}
+
+.facture-row.selected::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 3px;
+  background-color: var(--fede-color);
+  border-radius: 0 3px 3px 0;
 }
 
 .checkbox-container {
@@ -1111,7 +1146,7 @@ input[type='checkbox'] {
 }
 
 .checkmark:after {
-  content: "";
+  content: '';
   position: absolute;
   display: none;
 }
@@ -1305,6 +1340,4 @@ input[type='checkbox'] {
     width: 100%;
   }
 }
-
-
 </style>
