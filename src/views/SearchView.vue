@@ -104,7 +104,8 @@
             v-if="
               authStore.userData.location_code === '1101' &&
               typeSearch === 'FEDEARROZ' &&
-              dateRange === '2'
+              dateRange === '2' &&
+              typeFile !== 'SA'
             "
             class="filter-label"
           >
