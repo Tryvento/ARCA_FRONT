@@ -104,10 +104,8 @@ export const useAuthStore = defineStore('userAuth', () => {
     } catch (error) {
       if (error.response?.status === 401) {
         logout()
-        console.log("Token expirado: ", userData.value.token)
         return { success: false, message: 'Sesion Expirada' }
       }
-      console.log("Error al verificar token: ", error)
       return { success: false, message: error.response?.data?.detail || 'Error' }
     }
   }

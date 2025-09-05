@@ -19,9 +19,10 @@ provide('isLoading', isLoading)
 const intervalId = ref(null)
 
 const checkEveryFiveSeconds = () => {
-  useAuthStore().verifyToken()
-  if (useAuthStore().userData.token === null) {
+  const verifyToken = useAuthStore().verifyToken()
+  if (verifyToken.success === false) {
     router.push('/')
+  } else {
   }
   let estado = false;
   setInterval(() => {
