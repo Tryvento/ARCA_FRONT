@@ -77,7 +77,19 @@ watch(
 <template>
   <transition name="fade" mode="out-in">
     <div v-if="isLoading" class="loading">
-      <p class="loading-text">Cargando...</p>
+      <div class="loading-content">
+        <div class="spinner">
+          <div class="spinner-inner">
+            <div class="spinner-circle"></div>
+            <div class="spinner-circle"></div>
+            <div class="spinner-circle"></div>
+            <div class="spinner-circle"></div>
+            <div class="spinner-circle"></div>
+          </div>
+        </div>
+        <p class="loading-text">Cargando</p>
+        <p class="loading-subtext">Por favor espere...</p>
+      </div>
     </div>
   </transition>
   <router-view></router-view>
@@ -116,16 +128,102 @@ watch(
     top: 0;
     left: 0;
     z-index: 9999;
-    background-color: rgba(0, 0, 0, 0.795);
+    background-color: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(5px);
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.loading p {
+.loading-content {
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.spinner {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+}
+
+.spinner-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform: rotate(45deg);
+}
+
+.spinner-circle {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: var(--fede-color, #2c5aa0);
+    border-radius: 50%;
+    animation: spinner 1.2s infinite ease-in-out;
+}
+
+.spinner-circle:nth-child(1) {
+    top: 0;
+    left: 0;
+    animation-delay: 0s;
+}
+
+.spinner-circle:nth-child(2) {
+    top: 0;
+    right: 0;
+    animation-delay: 0.15s;
+}
+
+.spinner-circle:nth-child(3) {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 0.3s;
+}
+
+.spinner-circle:nth-child(4) {
+    bottom: 0;
+    left: 0;
+    animation-delay: 0.45s;
+}
+
+.spinner-circle:nth-child(5) {
+    bottom: 0;
+    right: 0;
+    animation-delay: 0.6s;
+}
+
+@keyframes spinner {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(0.3);
+        opacity: 0.7;
+    }
+}
+
+.loading-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 15px 0 5px;
     color: #fff;
-    font-size: 3rem;
-    margin-top: 1rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: bold;
-    letter-spacing: 2px;
+    letter-spacing: 0.5px;
+    animation: none;
+    opacity: 0.9;
+}
+
+.loading-subtext {
+    color: #a0aec0;
+    font-size: 0.9rem;
+    margin: 0;
+    opacity: 0.8;
 }
 .secret {
     position: fixed;
