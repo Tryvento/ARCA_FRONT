@@ -160,7 +160,12 @@
         <table class="factures-table">
           <thead>
             <tr>
-              <th><input type="checkbox" v-model="selectAll" @change="toggleSelectAll" /></th>
+              <th>
+                <label for="selectAll" class="checkbox-container">
+                  <input type="checkbox" v-model="selectAll" @change="toggleSelectAll" id="selectAll" />
+                  <span class="checkmark"></span>
+                </label>
+              </th>
               <th>Fecha</th>
               <th>NIT</th>
               <th v-if="typeSearch === 'PROVEEDORES'">Proveedor</th>
@@ -171,7 +176,12 @@
           </thead>
           <tbody>
             <tr v-for="facture in filesData" :key="facture.file_name" class="facture-row">
-              <td><input type="checkbox" v-model="selectedFiles" :value="facture.file_name" /></td>
+              <td>
+                <label :for="`select-${facture.file_name}`" class="checkbox-container">
+                  <input type="checkbox" v-model="selectedFiles" :value="facture.file_name" :id="`select-${facture.file_name}`" />
+                  <span class="checkmark"></span>
+                </label>
+              </td>
               <td>{{ formatDate(facture.date) }}</td>
               <td>{{ facture.nit || 'N/A' }}</td>
               <td v-if="typeSearch === 'PROVEEDORES' && facture.nit">
@@ -1060,6 +1070,68 @@ input[type='checkbox'] {
   background-color: var(--background-color-hover, #f8f9fa);
 }
 
+.checkbox-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  min-height: 44px; /* Minimum touch target size */
+  padding: 12px 0;
+  user-select: none;
+}
+
+.checkbox-container input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: relative;
+  height: 20px;
+  width: 20px;
+  background-color: #eee;
+  border: 2px solid var(--fede-color);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  margin: 0 auto;
+}
+
+.checkbox-container:hover input ~ .checkmark {
+  background-color: var(--fede-color);
+}
+
+.checkbox-container input[type='checkbox']:checked ~ .checkmark {
+  background-color: var(--fede-color);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input[type='checkbox']:checked ~ .checkmark:after {
+  display: block;
+}
+
+.checkbox-container .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
 .actions-cell {
   white-space: nowrap;
 }
@@ -1233,4 +1305,6 @@ input[type='checkbox'] {
     width: 100%;
   }
 }
+
+
 </style>
