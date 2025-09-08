@@ -39,7 +39,10 @@
     </div>
 
     <div class="search-filters">
-      <div class="filter-section">
+      <div
+        class="filter-section"
+        v-if="authStore.userData.location_code === '1101' || authStore.userData.admin"
+      >
         <h2>Tipo de búsqueda</h2>
         <div class="filter-group">
           <label for="typeSearch" class="filter-label">
@@ -53,16 +56,7 @@
                 >
               </div>
             </div>
-            <select
-              name=""
-              id="typeSearch"
-              v-model="typeSearch"
-              class="filter-select"
-              v-if="
-                authStore.userData.location_code === '1101' ||
-                authStore.userData.admin
-              "
-            >
+            <select name="" id="typeSearch" v-model="typeSearch" class="filter-select">
               <option value="FEDEARROZ">EMISION - FEDEARROZ</option>
               <option value="PROVEEDORES">RECEPCION - PROVEEDORES</option>
             </select>
