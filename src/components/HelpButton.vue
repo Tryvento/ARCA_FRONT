@@ -2,14 +2,14 @@
     <div class="help-container">
         <!-- Botón de WhatsApp que aparece a la izquierda -->
         <transition name="slide-left">
-            <a v-if="showButtons" :href="`https://wa.me/+57${supportNumber}`" target="_blank" class="help-button whatsapp-button">
+            <a v-if="showButtons" :href="`https://wa.me/+57${supportNumber}`" target="_blank" class="help-button whatsapp-button" title="Contactar por WhatsApp">
                 <ion-icon name="logo-whatsapp"></ion-icon>
             </a>
         </transition>
         
         <!-- Botón de correo que aparece arriba -->
         <transition name="slide-up">
-            <a v-if="showButtons" :href="`mailto:${supportEmail}`" target="_blank" class="help-button email-button">
+            <a v-if="showButtons" :href="`mailto:${supportEmail}`" target="_blank" class="help-button email-button" title="Enviar correo electrónico">
                 <ion-icon name="mail"></ion-icon>
             </a>
         </transition>

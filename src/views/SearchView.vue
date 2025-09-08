@@ -1079,6 +1079,10 @@ h2 {
   box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.15);
 }
 
+.filter-select:hover{
+  outline: none;
+}
+
 button {
   border: none;
   padding: 12px 20px;
