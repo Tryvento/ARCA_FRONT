@@ -39,13 +39,14 @@
     </div>
 
     <div class="search-filters">
-      <div
-        class="filter-section"
-        v-if="authStore.userData.location_code === '1101' || authStore.userData.admin"
-      >
+      <div class="filter-section">
         <h2>Tipo de búsqueda</h2>
         <div class="filter-group">
-          <label for="typeSearch" class="filter-label">
+          <label
+            for="typeSearch"
+            class="filter-label"
+            v-if="authStore.userData.location_code === '1101' || authStore.userData.admin"
+          >
             <div class="label-with-tooltip">
               <span>Tipo de búsqueda:</span>
               <div class="tooltip">
