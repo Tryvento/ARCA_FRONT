@@ -1,47 +1,55 @@
 <template>
-    <button class="help-button" @click="toggleHelpWindow">
-        <ion-icon name="help"></ion-icon>
-    </button>
-    <transition name="fade">
-        <div v-if="showHelpWindow" id="help-window">
-            <div id="help-window-content">
-                <h2>AYUDA</h2>
-                <p>Para soporte contactar por los siguientes medios:</p>
-                <a :href="`https://wa.me/+57${supportNumber}`" target="_blank" class="help-window-link">
-                    <ion-icon name="logo-whatsapp"></ion-icon>
-                    <span>+57 {{ supportNumber }}</span>
-                </a>
-                <a :href="`mailto:${supportEmail}`" target="_blank" class="help-window-link">
-                    <ion-icon name="mail"></ion-icon>
-                    <span>{{ supportEmail }}</span>
-                </a>
-                <button @click="showHelpWindow = false">Cerrar</button>
-            </div>
-        </div>
-    </transition>
+    <div class="help-container">
+        <!-- Botón de WhatsApp que aparece a la izquierda -->
+        <transition name="slide-left">
+            <a v-if="showButtons" :href="`https://wa.me/+57${supportNumber}`" target="_blank" class="help-button whatsapp-button">
+                <ion-icon name="logo-whatsapp"></ion-icon>
+            </a>
+        </transition>
+        
+        <!-- Botón de correo que aparece arriba -->
+        <transition name="slide-up">
+            <a v-if="showButtons" :href="`mailto:${supportEmail}`" target="_blank" class="help-button email-button">
+                <ion-icon name="mail"></ion-icon>
+            </a>
+        </transition>
+        
+        <!-- Botón principal de ayuda/cierre -->
+        <button class="help-button main-button" @click="toggleButtons">
+            <ion-icon :name="showButtons ? 'close' : 'help'"></ion-icon>
+        </button>
+    </div>
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import { ref } from 'vue'
 
-const showHelpWindow = ref(false)
+const showButtons = ref(false)
 const supportNumber = import.meta.env.VITE_SUPPORT_NUMBER
 const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL
 
-const toggleHelpWindow = () => {
-    showHelpWindow.value = !showHelpWindow.value
+const toggleButtons = () => {
+    showButtons.value = !showButtons.value
 }
-
 </script>
 
 <style scoped>
-*{
+* {
     font-family: var(--font-family);
 }
-.help-button{
+
+.help-container {
     position: fixed;
     bottom: 20px;
     right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    z-index: 1001;
+}
+
+.help-button {
     background-color: var(--fede-color);
     color: white;
     border: none;
@@ -54,142 +62,57 @@ const toggleHelpWindow = () => {
     cursor: pointer;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
-    z-index: 1001;
     font-size: 1.5rem;
-}
-
-.help-button:hover{
-    background-color: var(--fede-color-hover);
-}
-
-.help-button:active{
-    background-color: var(--fede-color-active);
-}
-
-#help-window{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1002;
-    backdrop-filter: blur(4px);
-    animation: fadeIn 0.3s ease;
-}
-
-#help-window-content{
-    background-color: white;
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    animation: scaleIn 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-}
-
-#help-window-content h2{
-    text-align: center;
-}
-
-#help-window-content p{
-    text-align: center;
-}
-
-#help-window-content a{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.help-window-link{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
     text-decoration: none;
-    color: black;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid var(--back-color);
 }
 
-.help-window-link:hover{
-    background-color: var(--fede-color-hover);
-    border-radius: 7px;
-    color: white;
+.main-button {
+    z-index: 1003;
 }
 
-.help-window-link:active{
-    background-color: var(--fede-color-active);
-    border-radius: 9px;
-    color: white;
+.whatsapp-button {
+    background-color: #25D366;
+    position: absolute;
+    right: 65px; /* Posición a la izquierda del botón principal */
+    bottom: 0;
+    z-index: 1002;
 }
 
-#help-window-content button{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    padding: 10px;
-    background-color: var(--fede-color);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin: 5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+.email-button {
+    background-color: var(--warning-color);
+    position: absolute;
+    right: 0;
+    bottom: 65px; /* Posición arriba del botón principal */
+    z-index: 1002;
 }
 
-#help-window-content button:hover{
-    background-color: var(--fede-color-hover);
+
+.help-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    filter: brightness(.9);
 }
 
-#help-window-content button:active{
-    background-color: var(--fede-color-active);
+/* Animaciones para los botones */
+.slide-left-enter-active,
+.slide-left-leave-active {
+    transition: all 0.4s ease;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0.8);
-    }
-    to {
-        transform: scale(1);
-    }
-}
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
+.slide-left-enter-from,
+.slide-left-leave-to {
     opacity: 0;
+    transform: translateX(30px);
 }
 
+.slide-up-enter-active,
+.slide-up-leave-active {
+    transition: all 0.4s ease;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+    opacity: 0;
+    transform: translateY(30px);
+}
 </style>
