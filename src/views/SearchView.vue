@@ -47,10 +47,22 @@
               <span>Tipo de búsqueda:</span>
               <div class="tooltip">
                 <ion-icon name="help-circle"></ion-icon>
-                <span class="tooltiptext">Selecciona el tipo de búsqueda: EMISIÓN para facturas emitidas por FEDEARROZ o RECEPCIÓN para facturas de proveedores.</span>
+                <span class="tooltiptext"
+                  >Selecciona el tipo de búsqueda: EMISIÓN para facturas emitidas por FEDEARROZ o
+                  RECEPCIÓN para facturas de proveedores.</span
+                >
               </div>
             </div>
-            <select name="" id="typeSearch" v-model="typeSearch" class="filter-select">
+            <select
+              name=""
+              id="typeSearch"
+              v-model="typeSearch"
+              class="filter-select"
+              v-if="
+                authStore.userData.location_code === '1101' ||
+                authStore.userData.admin
+              "
+            >
               <option value="FEDEARROZ">EMISION - FEDEARROZ</option>
               <option value="PROVEEDORES">RECEPCION - PROVEEDORES</option>
             </select>
@@ -60,7 +72,10 @@
               <span>Tipo de archivo:</span>
               <div class="tooltip">
                 <ion-icon name="help-circle"></ion-icon>
-                <span class="tooltiptext">Selecciona el tipo de documento que deseas buscar: Facturas, Notas de Crédito, Notas de Débito o, Soportes de Adquisición solo para EMISIÓN.</span>
+                <span class="tooltiptext"
+                  >Selecciona el tipo de documento que deseas buscar: Facturas, Notas de Crédito,
+                  Notas de Débito o, Soportes de Adquisición solo para EMISIÓN.</span
+                >
               </div>
             </div>
             <select name="" id="typeFile" v-model="typeFile" class="filter-select">
@@ -79,7 +94,10 @@
               <span>Rango de fechas:</span>
               <div class="tooltip">
                 <ion-icon name="help-circle"></ion-icon>
-                <span class="tooltiptext">Selecciona el rango de fechas para la búsqueda de notas crédito/débito: 2018-2020 o 2020 en adelante.</span>
+                <span class="tooltiptext"
+                  >Selecciona el rango de fechas para la búsqueda de notas crédito/débito: 2018-2020
+                  o 2020 en adelante.</span
+                >
               </div>
             </div>
             <select name="" id="date-range" v-model="dateRange" class="filter-select">
@@ -97,7 +115,9 @@
               <span>NIT:</span>
               <div class="tooltip">
                 <ion-icon name="help-circle"></ion-icon>
-                <span class="tooltiptext">Ingresa el NIT del proveedor para filtrar los resultados.</span>
+                <span class="tooltiptext"
+                  >Ingresa el NIT del proveedor para filtrar los resultados.</span
+                >
               </div>
             </div>
             <input type="text" id="nit-search" v-model="nit_search" class="filter-input" />
@@ -107,7 +127,10 @@
               <span>Fecha inicio:</span>
               <div class="tooltip">
                 <ion-icon name="help-circle"></ion-icon>
-                <span class="tooltiptext">Selecciona la fecha de inicio para filtrar. Puedes usar solo esta fecha, solo la fecha final, o ambas.</span>
+                <span class="tooltiptext"
+                  >Selecciona la fecha de inicio para filtrar. Puedes usar solo esta fecha, solo la
+                  fecha final, o ambas.</span
+                >
               </div>
             </div>
             <input
@@ -124,7 +147,10 @@
               <span>Fecha fin:</span>
               <div class="tooltip">
                 <ion-icon name="help-circle"></ion-icon>
-                <span class="tooltiptext">Selecciona la fecha de fin para filtrar. Puedes usar solo esta fecha, solo la fecha de inicio, o ambas.</span>
+                <span class="tooltiptext"
+                  >Selecciona la fecha de fin para filtrar. Puedes usar solo esta fecha, solo la
+                  fecha de inicio, o ambas.</span
+                >
               </div>
             </div>
             <input
@@ -149,7 +175,10 @@
               <span>Ubicación:</span>
               <div class="tooltip">
                 <ion-icon name="help-circle"></ion-icon>
-                <span class="tooltiptext">Selecciona la ubicación para filtrar los resultados. Solo disponible para ciertos tipos de búsqueda.</span>
+                <span class="tooltiptext"
+                  >Selecciona la ubicación para filtrar los resultados. Solo disponible para ciertos
+                  tipos de búsqueda.</span
+                >
               </div>
             </div>
             <select v-model="selectedLocation" class="filter-select">
@@ -845,7 +874,7 @@ watch(
   position: relative;
   display: flex;
   cursor: help;
-  color: var(--fede-color)
+  color: var(--fede-color);
 }
 
 .tooltip .tooltiptext {
@@ -869,7 +898,7 @@ watch(
 }
 
 .tooltip .tooltiptext::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 100%;
   left: 50%;
@@ -1473,7 +1502,7 @@ input[type='checkbox'] {
   .results-toggle-container {
     min-width: 100%;
   }
-  
+
   .results-count,
   .download-selected-btn {
     min-width: 100%;
