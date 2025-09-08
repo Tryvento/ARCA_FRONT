@@ -559,9 +559,7 @@ button:disabled {
   gap: 15px;
   flex-wrap: wrap;
   padding: 15px;
-  background: white;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .page-size {
