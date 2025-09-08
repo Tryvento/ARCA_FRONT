@@ -1,70 +1,87 @@
-# ARCA
-## 1. INTRODUCCION
-### 1.1 PROPOSITO Y DESCRIPCION DEL SISTEMA
-El presente documento tiene como objetivo explicar el funcionamiento del sistema de facturacion y repositorio de arca.
+# Sistema de Gestión Documental ARCA
 
-Arca es un sistema que permite la gestion de comprobantes **(facturas, notas de credito, notas de debito, soportes de adquisicion)** emitidos por la DIAN y facilita su busqueda y descarga en su respectivo formato pdf y xml.
-Ademas, permite la gestion de usuarios y permisos, separados por ubicaciones, conectado directamente a la base de datos del programa SEVEN utlizado actualmente por la FEDERACION NACIONAL DE ARROCEROS FEDEARROZ para los datos relacionados con las ubicaciones de emision de facturas y los proveedores para las facturas de recepcion.
+## 1. Introducción
 
-### 1.2 ALCANCE
-El programa cubre los siguientes aspectos:
-- Busqueda de comprobantes
-- Descarga de comprobantes
-- Gestion de usuarios
-- Gestion de permisos
-- Subida de comprobantes
+### 1.1 Propósito y Descripción del Sistema
 
-El presente documento describe el funcionamiento del sistema de busqueda y repositorio de arca.
+El presente documento técnico tiene como finalidad documentar la arquitectura, configuración y operación del Sistema de Gestión Documental ARCA, una solución integral para la administración de comprobantes electrónicos emitidos ante la DIAN.
 
-### 1.3 PUBLICO OBJETIVO
-El presente documento es de utilidad para los desarrolladores de FEDEARROZ que deseen refactorizar y mejorar el sistema ARCA.
+ARCA es una plataforma empresarial diseñada para la gestión integral de documentos fiscales, incluyendo facturas, notas crédito, notas débito y soportes de adquisición. El sistema facilita la búsqueda, visualización y descarga de documentos en formatos estándar (PDF/XML), garantizando el cumplimiento de los requisitos legales vigentes.
 
-## 2. ARQUITECTURA DEL SISTEMA
-### DIAGRAM DE ARQUITECTURA
-![Diagrama de arquitectura](./src/assests/doc_img/img1.png)
+La plataforma integra un módulo avanzado de administración de usuarios y control de acceso basado en roles, segmentado por ubicaciones geográficas. Se encuentra interconectado con la base de datos del sistema SEVEN, utilizado actualmente por la FEDERACIÓN NACIONAL DE ARROCEROS FEDEARROZ, para la sincronización de datos relacionados con las ubicaciones de emisión de facturas y el directorio de proveedores.
 
-### 2.1 Tecnologías utilizadas
-#### 2.1.1 Frontend
-- **Vue 3** - Framework de JavaScript progresivo para construir interfaces de usuario
-- **Vite** - Herramienta de construcción de frontend moderna y rápida
-- **Pinia** - Librería de gestión de estado para aplicaciones Vue
-- **Axios** - Cliente HTTP basado en promesas para el navegador y Node.js
-- **Vue Router** - Enrutador oficial para Vue.js
-- **JSZip** - Librería para crear, leer y editar archivos .zip en JavaScript
-- **Vite Plugin Vue Devtools** - Integración de Vue Devtools para Vite
+### 1.2 Alcance
 
-#### 2.1.2 Backend
-- **Python 3.13** - Lenguaje de programación
-- **FastAPI** (0.115.4) - Framework web moderno y rápido para construir APIs
-- **Uvicorn** (0.32.0) - Servidor ASGI para ejecutar aplicaciones FastAPI
-- **SQLAlchemy** (2.0.36) - ORM para interactuar con bases de datos
-- **Pydantic** (2.11.1) - Validación de datos y configuración
-- **PyMySQL** (1.1.1) - Conector MySQL para Python
-- **mysqlclient** (2.2.5) - Interfaz Python para MySQL
-- **python-dotenv** (1.1.0) - Manejo de variables de entorno
-- **python-jose** (3.4.0) - Implementación de JWT para autenticación
-- **bcrypt** (4.2.0) - Librería para hashing de contraseñas
-- **passlib** (1.7.4) - Utilidades para el manejo seguro de contraseñas
-- **requests** (2.32.3) - Cliente HTTP para realizar peticiones a servicios externos
-- **pandas** (2.2.3) - Análisis y manipulación de datos
-- **py7zr** (1.0.0) - Soporte para archivos 7z
-- **python-multipart** (0.0.17) - Soporte para formularios multipart
+El sistema ARCA abarca las siguientes funcionalidades principales:
 
+- Búsqueda avanzada de comprobantes electrónicos
+- Gestión documental con capacidad de descarga en múltiples formatos
+- Administración centralizada de usuarios y perfiles de acceso
+- Control de permisos granulares por ubicación y funcionalidad
+- Módulo de carga masiva de documentos
+
+El presente documento técnico detalla la arquitectura, configuración y procedimientos operativos del sistema de búsqueda y repositorio documental ARCA.
+
+### 1.3 Público Objetivo
+
+Este documento está dirigido al equipo de desarrollo de FEDEARROZ responsable del mantenimiento, actualización y mejora continua del sistema ARCA, así como a los administradores de sistemas involucrados en su implementación y soporte.
+
+## 2. Arquitectura del Sistema
+
+### 2.1 Diagrama de Arquitectura
+
+![Diagrama de Arquitectura del Sistema](./src/assests/doc_img/img1.png)
+
+### 2.2 Stack Tecnológico
+
+#### 2.2.1 Frontend
+
+La capa de presentación del sistema ha sido desarrollada utilizando tecnologías modernas de desarrollo web:
+
+- **Vue 3** - Framework progresivo para la construcción de interfaces de usuario interactivas
+- **Vite** - Herramienta de construcción de frontend de próxima generación
+- **Pinia** - Solución de gestión de estado para aplicaciones Vue
+- **Axios** - Cliente HTTP basado en promesas para operaciones asíncronas
+- **Vue Router** - Sistema de enrutamiento oficial para aplicaciones Vue.js
+- **JSZip** - Biblioteca para manipulación de archivos ZIP directamente en el navegador
+- **Vite Plugin Vue Devtools** - Extensión para depuración en entorno de desarrollo
+
+#### 2.2.2 Backend
+
+El backend del sistema está construido sobre las siguientes tecnologías:
+
+- **Python 3.13** - Lenguaje de programación de alto nivel
+- **FastAPI (0.115.4)** - Framework web moderno para el desarrollo de APIs RESTful
+- **Uvicorn (0.32.0)** - Servidor ASGI de alto rendimiento
+- **SQLAlchemy (2.0.36)** - ORM para interacción con bases de datos relacionales
+- **Pydantic (2.11.1)** - Validación de datos y configuración tipada
+- **PyMySQL (1.1.1) / mysqlclient (2.2.5)** - Conectores para bases de datos MySQL
+- **python-dotenv (1.1.0)** - Gestión de variables de entorno
+- **python-jose (3.4.0)** - Implementación de autenticación JWT
+- **bcrypt (4.2.0)** - Algoritmo de hashing seguro para contraseñas
+- **passlib (1.7.4)** - Utilidades avanzadas para manejo de credenciales
+- **requests (2.32.3)** - Cliente HTTP para integraciones externas
+- **pandas (2.2.3)** - Biblioteca para análisis y manipulación de datos
+- **py7zr (1.0.0)** - Soporte para compresión/descompresión 7z
+- **python-multipart (0.0.17)** - Manejo de formularios multiparte
 
 ### 2.2 Patrones de diseño
 
 #### 2.2.1 Frontend
+
 - **Pinia** - Patrón de gestión de estado para aplicaciones Vue
 
 #### 2.2.2 Backend
-- **FastAPI** - Patrón de diseño para construir APIs
 
+- **FastAPI** - Patrón de diseño para construir APIs
 
 ## 3. Configuración del Entorno
 
 ### 3.1 Requisitos del sistema
+
 ### 3.1.1 Servidor Principal
-- **Windows Server 2016** -  Sistema operativo
+
+- **Windows Server 2016** - Sistema operativo
 - **Python 3.13** - Lenguaje de programación del backend y del file_sorter
 - **XAMPP** - Servidor web
 - **MySQL** - Base de datos
@@ -84,13 +101,11 @@ El presente documento es de utilidad para los desarrolladores de FEDEARROZ que d
 - **Carpeta arca_repo** - Carpeta compartida mediante red para almacenamiento de archivos masivo a la que se conectara el file_sorter
 - **File Sorter** - Programa que ordena los archivos masivos
 
-
 ### 3.2 Instalación de dependencias
 
 #### 3.2.1 Frontend
 
 **npm install** - Instala las dependencias del frontend desde el package.json
-
 
 #### 3.2.2 Backend
 
@@ -100,10 +115,10 @@ El presente documento es de utilidad para los desarrolladores de FEDEARROZ que d
 
 **pip install -r requirements.txt** - Instala las dependencias del file sorter desde el requirements.txt (Ejecutar en el directorio del file sorter dentro de la carpeta del backend)
 
-
 ### 3.3 Variables de entorno
 
 #### 3.3.1 Frontend
+
 - **VITE_API_URL** = URL del backend (Ejemplo: http://194.168.0.57:8000)
 - **VITE_SUPPORT_NUMBER** = Numero de soporte (Ejemplo: 3219231178)
 - **VITE_SUPPORT_EMAIL** = Email de soporte (Ejemplo: davidcarrillo@fedearroz.com.co)
@@ -122,8 +137,11 @@ El presente documento es de utilidad para los desarrolladores de FEDEARROZ que d
 El **FILE_SORTER** funciona de manera independiente del entorno y no necesita de variables de entorno
 
 ## 4. Estructura del Proyecto
+
 ### 4.1 Descripcion de directorios
+
 #### 4.1.1 Frontend
+
 ```
 ARCA-FRONTEND/                 # Frontend del sistema
 ├── .vscode/                  # Configuración de Visual Studio Code
@@ -145,6 +163,7 @@ ARCA-FRONTEND/                 # Frontend del sistema
 ```
 
 #### 4.1.2 Backend
+
 ```
 ARCA-BACKEND/                 # Backend del sistema
 ├── .vscode/                  # Configuración de Visual Studio Code
@@ -155,7 +174,9 @@ ARCA-BACKEND/                 # Backend del sistema
 ```
 
 ### 4.2 Componentes principales
+
 #### 4.2.1 Frontend
+
 ```
 src/
 ├── components/               # Componentes reutilizables
@@ -181,6 +202,7 @@ src/
 ```
 
 #### 4.2.2 Backend
+
 ```
 ARCA-BACKEND/                 # Backend del sistema
 ├── main.py                   # Aplicación principal (endpoints API)
@@ -196,6 +218,7 @@ ARCA-BACKEND/                 # Backend del sistema
 ```
 
 #### 4.2.3 File Sorter
+
 ```
 ARCA-BACKEND/ARCA_FS/                 # File Sorter del sistema
 ├── file_sorter.py                   # Organizador de achivos de alto trafico
@@ -234,11 +257,12 @@ ARCA-BACKEND/ARCA_FS/                 # File Sorter del sistema
    - Soporta alertas que se cierran solas y alertas que tienen que ser cerradas por el usuario
 
 6. **Flujo de Datos**
+
    ```
-   Vistas (Vue Components) 
-   → Stores (Pinia) 
-   → API (Axios) 
-   → Backend (FastAPI) 
+   Vistas (Vue Components)
+   → Stores (Pinia)
+   → API (Axios)
+   → Backend (FastAPI)
    → Base de Datos (MYSQL)
    ```
 
@@ -324,6 +348,7 @@ El FileSorter es un servicio autónomo que se encarga del procesamiento automát
    - `file_sorter.py`: Módulo principal con la lógica de procesamiento
 
 ## 5. Guía de Desarrollo
+
 ### 5.1 Estándares de código
 
 #### 5.1.1 Frontend (Vue 3 + JavaScript/TypeScript)
@@ -403,6 +428,7 @@ detalles opcionales
 ```
 
 **Tipos de commit:**
+
 - `feat`: Nueva característica
 - `fix`: Corrección de errores
 - `docs`: Cambios en la documentación
@@ -422,7 +448,9 @@ detalles opcionales
 6. Crear un Pull Request con descripción detallada
 
 ## 6. Despliegue
+
 ### 6.1 Build y Compilación
+
 #### 6.1.1 Frontend
 
 1. Ejecutar `npm run dev` en el servidor de produccion (Configuraciones realizadas para mantener produccion aun usando `dev`)
@@ -456,18 +484,28 @@ La documentacion de la API se crea en automatico por FastAPI al desplegar el bac
 
 ## 8. Troubleshooting
 
-
 ### 8.1 Errores comunes
+
 #### 8.1.1 Error de subida de archivos
+
 Madiante la interfaz de usuario para subir archivos al file_sorter, hay cierta limitacion en la cantidad de archivos que dependera del sistema operativo y la cantidad de memoria RAM disponible.
+
 #### 8.1.2 Error, el usuario no le carga la informacion despues de un tiempo
+
 Debido al sistema de autrenticacion, diseñado para mantener una sesion activa por maximo 30 minutos, si el usuario deja la pagina en segundo plano y su sesion se vence en este lapso, el usuario no podra cargar la informacion.
+
 #### 8.1.3 El file_sorter no clasifica los archivos
+
 El file_sorter despues de ser ejecutado y organizar `X` cantidad de archivos, puede que se detenga por problemas de rendimiento. La solucion es en su consola, presionar `Ctrl + C` para detenerlo y ejecutarlo de nuevo.
+
 ### 8.2 Soluciones
+
 #### 8.2.1 Solucion de subida de archivos
+
 Con grandes cantidades de archivos, acceder directamente al servidor de almacenamiento y mover los archivos a la carpeta raw_files del file_sorter.
+
 #### 8.2.2 Solucion de sesion vencida
+
 Recargar la pagina para iniciar una nueva sesion.
 
 ### 8.3 Logs y monitoreo
