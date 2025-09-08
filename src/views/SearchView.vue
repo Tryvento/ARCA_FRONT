@@ -329,7 +329,7 @@
 <script setup>
 import { ref, onMounted, inject, provide, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
-import { useFacturesStore } from '../stores/factures'
+import { useFacturesStore } from '../stores/files'
 import { useLogsStore } from '../stores/logs'
 import { useSuppliersStore } from '../stores/suppliers'
 import { useRouter } from 'vue-router'
