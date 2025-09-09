@@ -4,23 +4,21 @@
 
 ### 1.1 Propósito y Descripción del Sistema
 
-El presente documento técnico tiene como finalidad documentar la arquitectura, configuración y operación del Sistema de Gestión Documental ARCA, una solución integral para la administración de comprobantes electrónicos emitidos ante la DIAN.
-
-ARCA es una plataforma empresarial diseñada para la gestión integral de documentos fiscales, incluyendo facturas, notas crédito, notas débito y soportes de adquisición. El sistema facilita la búsqueda, visualización y descarga de documentos en formatos estándar (PDF/XML), garantizando el cumplimiento de los requisitos legales vigentes.
-
-La plataforma integra un módulo avanzado de administración de usuarios y control de acceso basado en roles, segmentado por ubicaciones geográficas. Se encuentra interconectado con la base de datos del sistema SEVEN, utilizado actualmente por la FEDERACIÓN NACIONAL DE ARROCEROS FEDEARROZ, para la sincronización de datos relacionados con las ubicaciones de emisión de facturas y el directorio de proveedores.
+El presente documento tiene como objetivo explicar el funcionamiento de ARCA.
+Arca es un sistema que permite la gestión de documentos comprobantes electrónicos **(facturas, notas de crédito, notas de débito, soportes de adquisición)**, en cuanto a emitidos como recepcionados. Su enfoque está dado para facilitar el almacenamiento y administración a nivel de búsquedas, cargas y descargas de los respectivos documentos electrónicos; tanto el respectivo PDF (representación gráfica) como el archivo XML. Los comprobantes ya tienen aplicados los filtros respectivos de acuerdo con el Anexo técnico vigente expedido por la DIAN.
+De otra parte, se construyó la gestión de usuarios y permisos, con roles de acuerdo con las respectivas ubicaciones. Conectando con la base de datos de Seven ERP para mantener actualizados datos de las ubicaciones, de los terceros, recepción.
 
 ### 1.2 Alcance
 
-El sistema ARCA abarca las siguientes funcionalidades principales:
+El sistema ARCA contempla las siguientes funcionalidades principales:
 
-- Búsqueda avanzada de comprobantes electrónicos
-- Gestión documental con capacidad de descarga en múltiples formatos
-- Administración centralizada de usuarios y perfiles de acceso
-- Control de permisos granulares por ubicación y funcionalidad
-- Módulo de carga masiva de documentos
+- **Búsqueda avanzada** de comprobantes electrónicos
+- **Gestión documental**, con capacidad de descarga en múltiples formatos
+- **Administración centralizada** de usuarios y perfiles de acceso
+- **Control de permisos granulares** por ubicación y funcionalidad
+- **Carga masiva** de documentos
 
-El presente documento técnico detalla la arquitectura, configuración y procedimientos operativos del sistema de búsqueda y repositorio documental ARCA.
+Este documento técnico detalla la arquitectura, configuración y procedimientos operativos del sistema de búsqueda y repositorio documental ARCA.
 
 ### 1.3 Público Objetivo
 
