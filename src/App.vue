@@ -53,6 +53,7 @@ onMounted(() => {
     useAuthStore().userData.admin = userData.admin
     useAuthStore().userData.restore_password = userData.restore_password
   } else {
+    alerts.error('Su sesion se ha vencido, recargue o inicie sesion de nuevo.')
     router.push('/')
   }
   // Iniciar el intervalo recursivo
