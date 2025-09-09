@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
     <div class="search-header">
-      <h1><img src="../assests/images/arca_inv_logo.png" alt="" />BÚSQUEDA DE COMPROBANTES</h1>
+      <h1><img src="../assests/images/arca_inv_logo.png" alt="" />BÚSQUEDA DE COMPROBANTES </h1>
       <span class="header-user">
         <h2>
           {{
@@ -46,6 +46,7 @@
             for="typeSearch"
             class="filter-label"
             v-if="authStore.userData.location_code === '1101' || authStore.userData.admin"
+            id="step1"
           >
             <div class="label-with-tooltip">
               <span>Tipo de búsqueda:</span>
@@ -62,7 +63,7 @@
               <option value="PROVEEDORES">RECEPCION - PROVEEDORES</option>
             </select>
           </label>
-          <label for="typeFile" class="filter-label">
+          <label for="typeFile" class="filter-label" id="step2">
             <div class="label-with-tooltip">
               <span>Tipo de archivo:</span>
               <div class="tooltip">
@@ -84,6 +85,7 @@
             for="date-range"
             class="filter-label"
             v-if="(typeFile === 'NC' || typeFile === 'ND') && typeSearch === 'FEDEARROZ'"
+            id="step3"
           >
             <div class="label-with-tooltip">
               <span>Rango de fechas:</span>
@@ -105,7 +107,7 @@
       <div class="filter-section">
         <h2>Filtros</h2>
         <div class="filter-group">
-          <label for="nit-search" class="filter-label" v-if="typeSearch === 'PROVEEDORES'">
+          <label for="nit-search" class="filter-label" v-if="typeSearch === 'PROVEEDORES'" id="step4">
             <div class="label-with-tooltip">
               <span>NIT:</span>
               <div class="tooltip">
@@ -117,7 +119,7 @@
             </div>
             <input type="text" id="nit-search" v-model="nit_search" class="filter-input" />
           </label>
-          <label for="start-date" class="filter-label">
+          <label for="start-date" class="filter-label" id="step5">
             <div class="label-with-tooltip">
               <span>Fecha inicio:</span>
               <div class="tooltip">
@@ -137,7 +139,7 @@
               class="filter-input"
             />
           </label>
-          <label for="end-date" class="filter-label">
+          <label for="end-date" class="filter-label" id="step6">
             <div class="label-with-tooltip">
               <span>Fecha fin:</span>
               <div class="tooltip">
@@ -165,6 +167,7 @@
               typeFile !== 'SA'
             "
             class="filter-label"
+            id="step7"
           >
             <div class="label-with-tooltip">
               <span>Ubicación:</span>
@@ -184,7 +187,7 @@
               <option value="others">OTROS</option>
             </select>
           </label>
-          <label class="filter-label">
+          <label class="filter-label" id="step8">
             <div class="label-with-tooltip">
               <span>Mostrar:</span>
               <div class="tooltip">
@@ -223,7 +226,7 @@
                 <ion-icon name="search"></ion-icon>
                 {{ totalFiles }} comprobantes encontrados
               </span>
-              <button v-else key="download" @click="downloadSelected" class="download-selected-btn">
+              <button v-else key="download" @click="downloadSelected" class="download-selected-btn" >
                 <ion-icon name="download"></ion-icon> Descargar
                 {{ selectedFiles.length }} seleccionados
               </button>
@@ -232,7 +235,7 @@
         </div>
       </div>
 
-      <div class="table-container">
+      <div class="table-container" id="step9">
         <table class="factures-table">
           <thead>
             <tr>
@@ -324,6 +327,8 @@
       </div>
     </div>
   </transition>
+  
+  <TourButton :steps="steps" class="tour-button"/>
 </template>
 
 <script setup>
@@ -336,6 +341,7 @@ import { useRouter } from 'vue-router'
 import axios from 'axios'
 import JSZip from 'jszip'
 import UploadFiles from '../components/UploadFilesWindow.vue'
+import TourButton from '../components/TourButton.vue'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -348,6 +354,114 @@ const showUploadFilesWindow = ref(false)
 provide('showUploadFilesWindow', showUploadFilesWindow)
 
 const locationsList = ref([])
+
+const steps = [
+    {
+      element: '#step1',
+      popover: {
+        title: 'Tipo de Búsqueda',
+        description: 'Selecciona el tipo de búsqueda:\n- EMISIÓN para facturas emitidas por FEDEARROZ\n- RECEPCIÓN para facturas de proveedores',
+        position: 'bottom',
+        showButtons: ['next'],
+        doneBtnText: 'Entendido',
+        nextBtnText: 'Siguiente'
+      }
+    },
+    {
+      element: '#step2',
+      popover: {
+        title: 'Tipo de Documento',
+        description: 'Selecciona el tipo de documento que deseas buscar:\n- Facturas\n- Notas de Crédito\n- Notas de Débito\n- Soportes de Adquisición (solo para EMISIÓN)',
+        position: 'bottom',
+        showButtons: ['next', 'previous'],
+        prevBtnText: 'Anterior',
+        nextBtnText: 'Siguiente'
+      }
+    },
+    {
+      element: '#step3',
+      popover: {
+        title: 'Rango de Fechas (Notas Crédito/Débito)',
+        description: 'Solo para Notas de Crédito/Débito de EMISIÓN:\n\nSelecciona el rango de fechas:\n- 2018-2020\n- 2020 en adelante',
+        position: 'bottom',
+        showButtons: ['next', 'previous'],
+        prevBtnText: 'Anterior',
+        nextBtnText: 'Siguiente',
+        when: {
+          show: () => (typeFile.value === 'NC' || typeFile.value === 'ND') && typeSearch.value === 'FEDEARROZ'
+        }
+      }
+    },
+    {
+      element: '#step4',
+      popover: {
+        title: 'Búsqueda por NIT',
+        description: 'Solo para búsqueda de PROVEEDORES:\n\nIngresa el NIT del proveedor para filtrar los resultados.',
+        position: 'bottom',
+        showButtons: ['next', 'previous'],
+        prevBtnText: 'Anterior',
+        nextBtnText: 'Siguiente',
+        when: {
+          show: () => typeSearch.value === 'PROVEEDORES'
+        }
+      }
+    },
+    {
+      element: '#step5',
+      popover: {
+        title: 'Filtrar por Fecha de Inicio',
+        description: 'Selecciona la fecha de inicio para filtrar los resultados.\n\nPuedes usar solo esta fecha, solo la fecha final, o ambas.',
+        position: 'bottom',
+        showButtons: ['next', 'previous'],
+        prevBtnText: 'Anterior',
+        nextBtnText: 'Siguiente'
+      }
+    },
+    {
+      element: '#step6',
+      popover: {
+        title: 'Filtrar por Fecha de Fin',
+        description: 'Selecciona la fecha de fin para filtrar los resultados.\n\nPuedes usar solo esta fecha, solo la fecha de inicio, o ambas.',
+        position: 'bottom',
+        showButtons: ['next', 'previous'],
+        prevBtnText: 'Anterior',
+        nextBtnText: 'Siguiente'
+      }
+    },
+    {
+      element: '#step7',
+      popover: {
+        title: 'Filtrar por Ubicación',
+        description: 'Solo para EMISIÓN y ciertos tipos de documentos (no Soportes de Adquisición):\n\nSelecciona la ubicación para filtrar los resultados.',
+        position: 'bottom',
+        showButtons: ['next', 'previous'],
+        prevBtnText: 'Anterior',
+        nextBtnText: 'Siguiente',
+        when: {
+          show: () => typeSearch.value === 'FEDEARROZ' && typeFile.value !== 'SA' && authStore.userData.location_code === '1101'
+        }
+      }
+    },
+    {
+      element: '#step8',
+      popover: {
+        title: 'Resultados por Página',
+        description: 'Selecciona cuántos resultados deseas ver por página.\n\nOpciones disponibles: 10, 25, 50 o 100 resultados.',
+        position: 'bottom',
+        showButtons: ['next', 'previous'],
+        prevBtnText: 'Anterior',
+        nextBtnText: 'Siguiente'
+      }
+    },
+    {
+      element: '.results-container',
+      popover: {
+        title: 'Resultados de Búsqueda',
+        description: 'Aquí se mostrarán los resultados de tu búsqueda.\n\nPuedes:\n- Ordenar los resultados haciendo clic en los encabezados de columna\n- Seleccionar documentos para descargar\n- Navegar entre páginas si hay muchos resultados',
+        position: 'left'
+      }
+    }
+]
 
 const getLocationFromInvoice = (invoiceNumber) => {
   if (!invoiceNumber) return 'Otro'
@@ -1083,7 +1197,8 @@ h2 {
   outline: none;
 }
 
-button {
+.header-buttons button,
+.search-container button {
   border: none;
   padding: 12px 20px;
   border-radius: 6px;
@@ -1516,5 +1631,12 @@ input[type='checkbox'] {
   .search-button {
     width: 100%;
   }
+}
+
+.tour-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px;
 }
 </style>

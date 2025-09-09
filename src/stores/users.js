@@ -86,7 +86,7 @@ export const useUsersStore = defineStore('users', () => {
           complete_name: complete_name,
           location_code: location_code,
           admin: admin,
-          password: '123456',  // Considera implementar un generador de contraseñas seguro
+          password: `${import.meta.env.VITE_DEFAULT_PASSWORD}`,  // Considera implementar un generador de contraseñas seguro
           restore_password: true,  // Forzar cambio de contraseña en primer inicio
         },
         {

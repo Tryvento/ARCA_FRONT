@@ -54,7 +54,8 @@ La capa de presentación fue desarrollada con tecnologías orientadas a la const
 - **Pinia** – Solución oficial de gestión de estado para aplicaciones Vue.  
 - **Axios** – Cliente HTTP basado en promesas, utilizado para la comunicación con el backend.  
 - **Vue Router** – Sistema de enrutamiento oficial para la navegación en aplicaciones Vue.js.  
-- **JSZip** – Biblioteca para la creación y descompresión de archivos ZIP en el navegador.   
+- **JSZip** – Biblioteca para la creación y descompresión de archivos ZIP en el navegador. 
+- **Driver.js** – Biblioteca para la guía de turismo de la interfaz de usuario.  
 
 #### 2.2.2 Backend
 
@@ -147,7 +148,10 @@ El sistema **ARCA** requiere la configuración de variables de entorno para defi
   *Ejemplo*: `3219231178`  
 
 - **VITE_SUPPORT_EMAIL**: Correo electrónico de soporte.  
-  *Ejemplo*: `davidcarrillo@fedearroz.com.co`  
+  *Ejemplo*: `davidcarrillo@fedearroz.com.co`
+
+- **VITE_DEFAULT_PASSWORD**: Contraseña por defecto para los usuarios.  
+  *Ejemplo*: `123456`
 
 #### 3.3.2 Backend
 
@@ -161,13 +165,15 @@ El sistema **ARCA** requiere la configuración de variables de entorno para defi
   *Ejemplo*: `\\194.168.0.22\arca repo\raw_files`  
 
 - **DATABASE_URL**: Cadena de conexión a la base de datos.  
-  *Ejemplo*: `mysql+pymysql://root:@localhost/arca_db`  
+  *Ejemplo*: `mysql+pymysql://root:@localhost/arca_db` 
 
-- **ENVIRONMENT**: Entorno de ejecución de la aplicación.  
-  *Ejemplo*: `development`  
+- **ADMIN_MAIN_USER**: Usuario administrador principal.  
+  *Ejemplo*: `admin`
 
-- **DEBUG**: Activación o desactivación del modo de depuración.  
-  *Ejemplo*: `True`  
+- **ADMIN_MAIN_PASSWORD**: Contraseña del usuario administrador principal.  
+  *Ejemplo*: `admin123`
+
+
 
 #### 3.3.3 File Sorter
 
@@ -223,6 +229,7 @@ src/
 │ ├── AlertItem.vue # Componente individual de alerta
 │ ├── UploadFilesWindows.vue # Interfaz de carga de archivos
 │ └── HelpButton.vue # Botón de ayuda contextual
+│ └── TourButton.vue # Botón de guía de turismo
 │
 ├── views/ # Vistas principales de la aplicación
 │ ├── UsersView.vue # Módulo de gestión de usuarios
@@ -237,6 +244,7 @@ src/
 ├── suppliers.js # Información y manejo de proveedores
 ├── users.js # Estado y operaciones de usuarios
 └── useAlerts.js # Utilidades para el sistema de notificaciones
+└── useDriver.js # Utilidades para el sistema de guía de turismo
 ```
 
 #### 4.2.2 Backend

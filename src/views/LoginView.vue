@@ -3,16 +3,17 @@
     <div id="login-header">
       <img src="../assests/images/arca_inv_logo.png" alt="" />
       <h1>ARCA</h1>
+      <TourButton :steps="steps"/>
     </div>
 
     <form id="login-form" @submit.prevent="handleLogin">
       <h2>Inicio de sesión</h2>
       <p>Comunicar con el equipo de sistemas en caso de no conocer su usuario y/o contraseña</p>
-      <label for="user_name" class="input-label">
+      <label for="user_name" class="input-label" id="user_name">
         <ion-icon name="person"></ion-icon>
-        <input type="text" placeholder="Usuario" v-model="user_name" :disabled="isLoading" />
+        <input type="text" placeholder="Usuario" v-model="user_name" :disabled="isLoading"/>
       </label>
-      <label for="pwd" class="password-container, input-label">
+      <label for="pwd" class="password-container, input-label" id="pwd_label">
         <ion-icon name="lock-closed"></ion-icon>
         <input
           :type="showPassword ? 'text' : 'password'"
@@ -75,6 +76,7 @@ import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router'
 import { onMounted } from 'vue'
 import { useUsersStore } from '../stores/users'
+import TourButton from '../components/TourButton.vue'
 
 const usersStore = useUsersStore()
 
@@ -92,6 +94,26 @@ const messageType = ref('')
 
 const showRestoreModal = ref(false)
 const showRestorePassword = ref(false)
+
+
+const steps = [
+  {
+    element: '#user_name',
+    popover: {
+      title: 'Usuario',
+      description: 'Este usuario es entregado por el equipo de infraestructura, en caso de no contar con uno comunicar al equipo de sistemas',
+      position: 'bottom'
+    }
+  },
+  {
+    element: '#pwd_label',
+    popover: {
+      title: 'Contraseña',
+      description: 'La contraseña es asignada por defecto como ' + import.meta.env.VITE_DEFAULT_PASSWORD + ', si no conoce su contraseña debe contactar al equipo de sistemas',
+      position: 'bottom'
+    }
+  }
+]
 
 const showMessage = (msg, type = 'error') => {
   if (type === 'error') {
